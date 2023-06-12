@@ -28,7 +28,7 @@ namespace FaxCap.UI.Screen
 
         private void StartItemCollectRun()
         {
-            _gameManager.StartItemCollectRun();
+            _gameManager.StartRun();
             uiManager.ShowScreen(_uiGameScreen);
         }
     }

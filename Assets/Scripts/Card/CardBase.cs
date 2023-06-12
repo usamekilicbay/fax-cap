@@ -14,14 +14,6 @@ namespace FaxCap.Card
         [SerializeField] private GameObject frontSide;
         [SerializeField] private GameObject backSide;
         [SerializeField] private SpriteRenderer cloakRenderer;
-        [Space(10)]
-        [Header("Front Details")]
-        [SerializeField] protected SpriteRenderer spriteRenderer;
-        [SerializeField] protected TextMeshProUGUI frontSideNameText;
-        [Header("Back Details")]
-        [SerializeField] protected TextMeshProUGUI backSideNameText;
-        [Space(10)]
-        [SerializeField] private Transform _pivotTransform;
 
         private bool _isBackSideShown;
         private Vector3 _defaultScale;
@@ -30,7 +22,6 @@ namespace FaxCap.Card
         public float replyTimer = 5f;
 
         public bool isDone = false;
-        [SerializeField] private Image bg;
 
         private Vector2 initialPosition;
         private Quaternion initialRotation;

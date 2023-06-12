@@ -34,9 +34,10 @@ namespace FaxCap.Manager
         {
             //StartItemCollectRun();
             _uiManager.ShowScreen(_uiGameScreen);
+            _deckManager.StartRun();
         }
 
-        public void StartItemCollectRun()
+        public void StartRun()
         {
             _deckManager.StartRun();
         }

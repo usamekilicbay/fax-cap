@@ -7,7 +7,6 @@ namespace FaxCap.Manager
 {
     public class DeckManager : MonoBehaviour
     {
-        private int _cardCounter;
         private CardBase _currentCard;
 
         #region Dependency Injection
@@ -38,7 +37,6 @@ namespace FaxCap.Manager
 
         public void StartRun()
         {
-            _cardCounter = 6;
             SpawnCard();
         }
 
@@ -48,8 +46,6 @@ namespace FaxCap.Manager
             var card = _questionCardFactory.Create();
             card.UpdateCard();
             _currentCard = card;
-
-            _cardCounter--;
         }
 
         public void CompleteRun()

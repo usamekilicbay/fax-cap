@@ -1,3 +1,4 @@
+using FaxCap.Entity;
 using FaxCap.UI.Screen;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,14 +8,13 @@ namespace FaxCap.Manager
 {
     public class QuestionManager : MonoBehaviour
     {
-        private Dictionary<string, bool> questions = new();
-        private string question;
-        private bool _answer;
+        private List<Question> _questions = new();
+        private Question _question;
         private int questionCount;
 
         public const float ReplyTimerLimit = 5f;
 
-        private ScoreManager scoreManager;
+        private ScoreManager _scoreManager;
         private UIGameScreen _uiGameScreen;
 
         [Inject]
@@ -32,26 +32,34 @@ namespace FaxCap.Manager
 
         private void GenerateQuestions()
         {
-            questions.Clear();
+            _questions.Clear();
 
-            questions.Add("Are dogs mammals?", true);
-            questions.Add("Is the Earth flat?", false);
-            questions.Add("Is water wet?", true);
-            questions.Add("Can birds fly?", true);
-            questions.Add("Is the sun a star?", true);
-            questions.Add("Is 1 + 1 equal to 3?", false);
-            questions.Add("Do humans have five fingers on each hand?", true);
-            questions.Add("Is the capital of France London?", false);
-            questions.Add("Is chocolate a vegetable?", false);
-            questions.Add("Do plants require sunlight to grow?", true);
+            var animalsCategory = new Category("Animals");
+            var spaceCategory = new Category("Space");
+            var chemistryCategory = new Category("Chemistry");
+            var mathCategory = new Category("Math");
+            var biologyCategory = new Category("Biology");
+            var geographyCategory = new Category("Geography");
+            var foodCategory = new Category("Food");
+            var natureCategory = new Category("Nature");
+
+            _questions.Add(new Question("Are dogs mammals?", true, animalsCategory));
+            _questions.Add(new Question("Is the Earth flat?", false, spaceCategory));
+            _questions.Add(new Question("Is water wet?", true, chemistryCategory));
+            _questions.Add(new Question("Can birds fly?", true, biologyCategory));
+            _questions.Add(new Question("Is the sun a star?", true, spaceCategory));
+            _questions.Add(new Question("Is 1 + 1 equal to 3?", false, mathCategory));
+            _questions.Add(new Question("Do humans have five fingers on each hand?", true, biologyCategory));
+            _questions.Add(new Question("Is the capital of France London?", false, geographyCategory));
+            _questions.Add(new Question("Is chocolate a vegetable?", false, foodCategory));
+            _questions.Add(new Question("Do plants require sunlight to grow?", true, natureCategory));
         }
 
         public void AssignNewQuestion()
         {
-            var keys = new List<string>(questions.Keys);
-            var randomIndex = Random.Range(0, keys.Count);
-            question = keys[randomIndex];
-            _answer = questions[question];
+            var randomIndex = Random.Range(0, _questions.Count);
+            _question= _questions[randomIndex];
+
             UpdateQuestionCount();
         }
 
@@ -62,9 +70,9 @@ namespace FaxCap.Manager
         }
 
         public string GetQuestionText()
-            => question;
+            => _question.QuestionText;
 
         public bool CheckAnswer(bool answer)
-            => _answer == answer;
+            => _question.Answer == answer;
     }
 }
