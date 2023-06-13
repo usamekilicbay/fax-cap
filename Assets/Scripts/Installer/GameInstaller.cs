@@ -21,6 +21,11 @@ namespace FaxCap.Installer
             Container
                 .Bind<DeckManager>()
                 .FromComponentInHierarchy()
+                .AsSingle();  
+            
+            Container
+                .Bind<QuestionManager>()
+                .FromComponentInHierarchy()
                 .AsSingle();
 
             Container

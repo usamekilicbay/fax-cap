@@ -7,6 +7,8 @@ namespace FaxCap.Manager
 {
     public class DeckManager : MonoBehaviour
     {
+        [SerializeField] private RectTransform cardSpawnPoint;
+
         private CardBase _currentCard;
 
         #region Dependency Injection
@@ -44,6 +46,8 @@ namespace FaxCap.Manager
         {
             _questionManager.AssignNewQuestion();
             var card = _questionCardFactory.Create();
+            card.transform.SetParent(cardSpawnPoint);
+            card.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             card.UpdateCard();
             _currentCard = card;
         }

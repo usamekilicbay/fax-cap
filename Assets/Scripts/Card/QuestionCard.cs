@@ -1,8 +1,6 @@
 using FaxCap.Common.Types;
-using FaxCap.Entity;
 using FaxCap.Manager;
 using FaxCap.UI.Screen;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -24,6 +22,7 @@ namespace FaxCap.Card
         [SerializeField] private Image backArtwork;
         [Space(10)]
         [SerializeField] private AudioClip[] sfxs;
+        [SerializeField] Sprite[] cardBackArtworks;
 
         private AudioSource _audioSource;
 
@@ -44,12 +43,14 @@ namespace FaxCap.Card
             _questionManager = questionManager;
         }
 
-        private void Awake()
+        protected override void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
+
+            base.Awake();
         }
 
-        private void Update()
+        protected override void Update()
         {
             if (replyTimer < 0f)
                 return;
@@ -92,6 +93,7 @@ namespace FaxCap.Card
         public override void UpdateCard()
         {
             questionText.text = _questionManager.GetQuestionText();
+            backArtwork.sprite = cardBackArtworks[Random.Range(0, cardBackArtworks.Length)];
         }
 
         public class Factory : PlaceholderFactory<QuestionCard>

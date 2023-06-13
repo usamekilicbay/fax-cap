@@ -14,23 +14,8 @@ namespace FaxCap.UI.Screen
     {
         [SerializeField] private TextMeshProUGUI scoreText;
         [SerializeField] private TextMeshProUGUI questionCountText;
-        [SerializeField] private Button completeRunButton;
         [SerializeField] private Slider timerIndicator;
         [SerializeField] private Image timerFill;
-
-        private GameManager _gameManager;
-
-        [Inject]
-        public void Construct(GameManager gameManager)
-        {
-            _gameManager = gameManager;
-        }
-
-        private void Awake()
-        {
-            completeRunButton.onClick
-                .AddListener(_gameManager.CompleteRun);
-        }
 
         public void UpdateScoreText(int score)
         {

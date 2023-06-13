@@ -11,7 +11,7 @@ namespace FaxCap.Manager
         private DeckManager _deckManager;
         private UIHomeScreen _uiHomeScreen;
         private UIGameScreen _uiGameScreen;
-        private UIGameResultScreen _uiGameResultScreen;
+        private UIResultScreen _uiResultScreen;
 
         [Inject]
         public void Construct(UIManagerBase uiManager,
@@ -19,22 +19,24 @@ namespace FaxCap.Manager
             DeckManager deckManager,
             UIHomeScreen uiHomeScreen,
             UIGameScreen uiGameScreen,
-            UIGameResultScreen uiGameResultScreen)
+            UIResultScreen uiResultScreen)
         {
             _uiManager = uiManager;
             _currencyManager = currencyManager;
             _deckManager = deckManager;
             _uiHomeScreen = uiHomeScreen;
             _uiGameScreen = uiGameScreen;
-            _uiGameResultScreen = uiGameResultScreen;
+            _uiResultScreen = uiResultScreen;
         }
 
         //TODO: Development purpose
-        private void Start()
+        private void Update()
         {
-            //StartItemCollectRun();
-            _uiManager.ShowScreen(_uiGameScreen);
-            _deckManager.StartRun();
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                _uiManager.ShowScreen(_uiGameScreen);
+                _deckManager.StartRun();
+            }
         }
 
         public void StartRun()
@@ -45,7 +47,7 @@ namespace FaxCap.Manager
         public void CompleteRun()
         {
             _deckManager.CompleteRun();
-            _uiManager.ShowScreen(_uiGameResultScreen);
+            _uiManager.ShowScreen(_uiResultScreen);
         }
     }
 }

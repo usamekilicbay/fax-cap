@@ -15,7 +15,7 @@ namespace FaxCap.Card
         [SerializeField] private GameObject backSide;
         [SerializeField] private SpriteRenderer cloakRenderer;
 
-        private bool _isBackSideShown;
+        private bool _isBackSideShown = true;
         private Vector3 _defaultScale;
 
         protected RectTransform cardTransform;
@@ -54,28 +54,28 @@ namespace FaxCap.Card
 
         #region Unity
 
-        private void Awake()
+        protected virtual void Awake()
         {
             Setup();
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             FlipCard();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (isDone)
                 return;
 
             // If the card is not being dragged and it's not in the initial position,
             // gradually move it back to the center position
-            if (!isDragging && cardTransform.anchoredPosition != initialPosition)
-            {
-                cardTransform.anchoredPosition = Vector2.Lerp(cardTransform.anchoredPosition, initialPosition, movementSpeed * Time.deltaTime);
-                cardTransform.rotation = Quaternion.Lerp(cardTransform.rotation, initialRotation, movementSpeed * Time.deltaTime);
-            }
+            //if (!isDragging && cardTransform.anchoredPosition != initialPosition)
+            //{
+            //    cardTransform.anchoredPosition = Vector2.Lerp(cardTransform.anchoredPosition, initialPosition, movementSpeed * Time.deltaTime);
+            //    cardTransform.rotation = Quaternion.Lerp(cardTransform.rotation, initialRotation, movementSpeed * Time.deltaTime);
+            //}
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -132,15 +132,15 @@ namespace FaxCap.Card
 
         private void Setup()
         {
-            frontSide.SetActive(true);
-            backSide.SetActive(false);
-            backSide.transform.rotation = Quaternion.Euler(Vector3.up * 180);
-            _defaultScale = transform.localScale;
-            transform.localScale = _defaultScale * 0.7f;
-            transform.DOScale(_defaultScale, 0.5f);
-            var cloakColor = cloakRenderer.color;
-            cloakColor.a = 0;
-            cloakRenderer.color = cloakColor;
+            frontSide.SetActive(false);
+            backSide.SetActive(true);
+            //backSide.transform.rotation = Quaternion.Euler(Vector3.up * 180);
+            //_defaultScale = transform.localScale;
+            //transform.localScale = _defaultScale * 0.7f;
+            //transform.DOScale(_defaultScale, 0.5f);
+            //var cloakColor = cloakRenderer.color;
+            //cloakColor.a = 0;
+            //cloakRenderer.color = cloakColor;
 
             cardTransform = GetComponent<RectTransform>();
             initialPosition = cardTransform.anchoredPosition;
@@ -151,7 +151,7 @@ namespace FaxCap.Card
 
         private void FlipCard()
         {
-            cardTransform.DORotate(transform.rotation.eulerAngles + Vector3.up * 90, 0.5f)
+            cardTransform.DORotate(cardTransform.rotation.eulerAngles + Vector3.up * 90, 1f)
                 .OnComplete(UpdateShownSide);
         }
 
@@ -170,7 +170,7 @@ namespace FaxCap.Card
                 _isBackSideShown = true;
             }
 
-            transform.DORotate(transform.rotation.eulerAngles + Vector3.up * 90, 0.5f);
+            cardTransform.DORotate(Vector3.zero, 1f);
         }
 
         protected virtual void SwipeRight()
@@ -197,8 +197,8 @@ namespace FaxCap.Card
 
         private void VanishCard()
         {
-            cloakRenderer.DOFade(1, 0.5f)
-                .OnComplete(() => Destroy(gameObject));
+            //cloakRenderer.DOFade(1, 0.5f)
+            //    .OnComplete(() => Destroy(gameObject));
         }
 
         public abstract void UpdateCard();

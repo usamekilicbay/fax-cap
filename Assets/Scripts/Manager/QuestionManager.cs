@@ -58,7 +58,7 @@ namespace FaxCap.Manager
         public void AssignNewQuestion()
         {
             var randomIndex = Random.Range(0, _questions.Count);
-            _question= _questions[randomIndex];
+            _question = _questions[randomIndex];
 
             UpdateQuestionCount();
         }
