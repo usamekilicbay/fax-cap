@@ -26,6 +26,8 @@ namespace FaxCap.Card
 
         private AudioSource _audioSource;
 
+        private const float _replyTimeLimit = 5f;
+
         private GameManager _gameManager;
         private ScoreManager _scoreManager;
         private QuestionManager _questionManager;
@@ -45,18 +47,28 @@ namespace FaxCap.Card
 
         protected override void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
-
             base.Awake();
+
+            _audioSource = GetComponent<AudioSource>();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            replyTimer = _replyTimeLimit;
         }
 
         protected override void Update()
         {
-            if (replyTimer < 0f)
+            if (!isTimerStart)
                 return;
 
             replyTimer -= Time.deltaTime;
             _uiGameScreen.UpdateTimerBar(replyTimer);
+
+            if (replyTimer <= 0f)
+                _gameManager.CompleteRun();
         }
 
         protected override void SwipeLeft()
@@ -77,6 +89,10 @@ namespace FaxCap.Card
 
         private void Answer(bool answer)
         {
+            isTimerStart = false;
+
+            deckManager.SpawnCard();
+
             _audioSource.PlayOneShot(sfxs[Random.Range(0, sfxs.Length)]);
 
             var falseAnswer = !_questionManager.CheckAnswer(answer);
@@ -86,7 +102,6 @@ namespace FaxCap.Card
 
             var isDoublePointCard = CardType == CardType.DoublePoint;
             _scoreManager.IncreaseScore(replyTimer, isDoublePointCard);
-            _questionManager.AssignNewQuestion();
         }
 
         // TODO: Not sure if deck manager should fill this part
@@ -94,6 +109,11 @@ namespace FaxCap.Card
         {
             questionText.text = _questionManager.GetQuestionText();
             backArtwork.sprite = cardBackArtworks[Random.Range(0, cardBackArtworks.Length)];
+        }
+
+        private void OnDestroy()
+        {
+            isTimerStart = false;
         }
 
         public class Factory : PlaceholderFactory<QuestionCard>

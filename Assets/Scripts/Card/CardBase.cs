@@ -15,10 +15,13 @@ namespace FaxCap.Card
         [SerializeField] private GameObject backSide;
         [SerializeField] private SpriteRenderer cloakRenderer;
 
+        protected RectTransform cardTransform;
+
         private bool _isBackSideShown = true;
         private Vector3 _defaultScale;
 
-        protected RectTransform cardTransform;
+        protected bool isTimerStart;
+
         public float replyTimer = 5f;
 
         public bool isDone = false;
@@ -170,7 +173,8 @@ namespace FaxCap.Card
                 _isBackSideShown = true;
             }
 
-            cardTransform.DORotate(Vector3.zero, 1f);
+            cardTransform.DORotate(Vector3.zero, 1f)
+                .OnComplete(() => isTimerStart = true);
         }
 
         protected virtual void SwipeRight()
@@ -181,9 +185,6 @@ namespace FaxCap.Card
 
         protected virtual void SwipeLeft()
         {
-            Debug.Log("Passed");
-            deckManager.SpawnCard();
-
             cardTransform.DOAnchorPosX(-1200f, 1f)
                  .OnComplete(VanishCard);
         }
@@ -197,6 +198,7 @@ namespace FaxCap.Card
 
         private void VanishCard()
         {
+            Destroy(gameObject);
             //cloakRenderer.DOFade(1, 0.5f)
             //    .OnComplete(() => Destroy(gameObject));
         }

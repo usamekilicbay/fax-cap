@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: ef27a3d266bef874fa1a9493bd69a346, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -84,7 +84,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2151693162895430236}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 409a53c2fc720400bb482962c5563548, type: 3}
   m_Name: 
@@ -92,8 +92,8 @@ MonoBehaviour:
   settings:
     _blur: 0
     _endAngle: 360
-    _fillColor: {r: 0.909804, g: 0.8980393, b: 0.854902, a: 1}
-    _fillColor2: {r: 1, g: 0.26886797, b: 0.26886797, a: 1}
+    _fillColor: {r: 1, g: 1, b: 1, a: 1}
+    _fillColor2: {r: 1, g: 1, b: 1, a: 1}
     _fillOffset: {x: 0, y: 0}
     _fillPathLoops: 0
     _fillRotation: 45
@@ -122,15 +122,15 @@ MonoBehaviour:
     - {x: -0.29389253, y: -0.40450856}
     - {x: 0.29389274, y: -0.4045084}
     - {x: 0.4755282, y: 0.15450864}
-    _roundness: 20
-    _roundnessBottomLeft: 20
-    _roundnessBottomRight: 20
+    _roundness: 40
+    _roundnessBottomLeft: 40
+    _roundnessBottomRight: 40
     _roundnessPerCorner: 0
-    _roundnessTopLeft: 20
-    _roundnessTopRight: 20
+    _roundnessTopLeft: 40
+    _roundnessTopRight: 40
     _shapeType: 2
     _startAngle: 0
     _triangleOffset: 0.5
     _usePolygonMap: 0
-  wasConverted: 0
+  wasConverted: 1
   preConvertedScale: {x: 1, y: 1, z: 1}
