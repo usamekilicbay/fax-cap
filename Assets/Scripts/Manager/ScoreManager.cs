@@ -7,10 +7,11 @@ namespace FaxCap.Manager
     public class ScoreManager
     {
         private const int _reqularQuestionScore = 10;
-        private const int _doubleQuestionScore = 10;
+        private const int _perfectScore = 10;
 
-        private float _doubleScoreTimeSpan = 4f;
         private int _score;
+        private int _comboCounter = 1;
+        private const float _perfectScoreTimeSpan = 0f;
 
         private UIGameScreen _uiGameScreen;
 
@@ -22,17 +23,30 @@ namespace FaxCap.Manager
 
         public void IncreaseScore(float replyTimeSpan, bool isDoubleScore)
         {
-            var tempscore = replyTimeSpan < _doubleScoreTimeSpan
-                ? _reqularQuestionScore
-                : _doubleQuestionScore;
+            var tempScore = _reqularQuestionScore;
 
-            tempscore *= isDoubleScore
+            if (IsPerfectReplyTime(replyTimeSpan))
+            {
+                tempScore = _perfectScore;
+                _comboCounter++;
+                Debug.Log(_comboCounter);
+                _uiGameScreen.UpdateComboCounterText(_comboCounter);
+            }
+            else
+                _comboCounter = 1;
+
+            tempScore *= isDoubleScore
                 ? 2
                 : 1;
 
-            _score += tempscore;
+            _score += tempScore;
 
             _uiGameScreen.UpdateScoreText(_score);
+        }
+
+        private bool IsPerfectReplyTime(float replyTimeSpan)
+        {
+            return replyTimeSpan >= _perfectScoreTimeSpan;
         }
     }
 }

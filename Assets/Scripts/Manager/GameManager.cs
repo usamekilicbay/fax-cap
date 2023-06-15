@@ -9,6 +9,7 @@ namespace FaxCap.Manager
         private UIManagerBase _uiManager;
         private ICurrencyManager _currencyManager;
         private DeckManager _deckManager;
+        private QuestionManager _questionManager;
         private UIHomeScreen _uiHomeScreen;
         private UIGameScreen _uiGameScreen;
         private UIResultScreen _uiResultScreen;
@@ -17,6 +18,7 @@ namespace FaxCap.Manager
         public void Construct(UIManagerBase uiManager,
             ICurrencyManager currencyManager,
             DeckManager deckManager,
+            QuestionManager questionManager,
             UIHomeScreen uiHomeScreen,
             UIGameScreen uiGameScreen,
             UIResultScreen uiResultScreen)
@@ -24,6 +26,7 @@ namespace FaxCap.Manager
             _uiManager = uiManager;
             _currencyManager = currencyManager;
             _deckManager = deckManager;
+            _questionManager = questionManager;
             _uiHomeScreen = uiHomeScreen;
             _uiGameScreen = uiGameScreen;
             _uiResultScreen = uiResultScreen;
@@ -41,6 +44,7 @@ namespace FaxCap.Manager
 
         public void StartRun()
         {
+            _questionManager.StartRun();
             _deckManager.StartRun();
         }
 

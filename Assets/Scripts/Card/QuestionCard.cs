@@ -26,7 +26,7 @@ namespace FaxCap.Card
 
         private AudioSource _audioSource;
 
-        private const float _replyTimeLimit = 5f;
+        private const float _replyTimeLimit = 500f;
 
         private GameManager _gameManager;
         private ScoreManager _scoreManager;
@@ -68,7 +68,7 @@ namespace FaxCap.Card
             _uiGameScreen.UpdateTimerBar(replyTimer);
 
             if (replyTimer <= 0f)
-                _gameManager.CompleteRun();
+                GameOver();
         }
 
         protected override void SwipeLeft()
@@ -91,14 +91,17 @@ namespace FaxCap.Card
         {
             isTimerStart = false;
 
+            var wrongAnswer = !_questionManager.CheckAnswer(answer);
+
+            if (wrongAnswer)
+            {
+                GameOver();
+                return;
+            }
+
             deckManager.SpawnCard();
 
             _audioSource.PlayOneShot(sfxs[Random.Range(0, sfxs.Length)]);
-
-            var falseAnswer = !_questionManager.CheckAnswer(answer);
-
-            if (falseAnswer)
-                _gameManager.CompleteRun();
 
             var isDoublePointCard = CardType == CardType.DoublePoint;
             _scoreManager.IncreaseScore(replyTimer, isDoublePointCard);
@@ -111,9 +114,10 @@ namespace FaxCap.Card
             backArtwork.sprite = cardBackArtworks[Random.Range(0, cardBackArtworks.Length)];
         }
 
-        private void OnDestroy()
+        private void GameOver()
         {
             isTimerStart = false;
+            _gameManager.CompleteRun();
         }
 
         public class Factory : PlaceholderFactory<QuestionCard>

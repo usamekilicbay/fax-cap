@@ -149,7 +149,7 @@ namespace FaxCap.Card
             initialPosition = cardTransform.anchoredPosition;
             initialRotation = cardTransform.rotation;
 
-            bgColor = Camera.main.backgroundColor;
+            bgColor = Camera.main.backgroundColor; 
         }
 
         private void FlipCard()
@@ -196,7 +196,7 @@ namespace FaxCap.Card
             cardTransform.rotation = initialRotation;
         }
 
-        private void VanishCard()
+        private void VanishCard() 
         {
             Destroy(gameObject);
             //cloakRenderer.DOFade(1, 0.5f)

@@ -26,6 +26,10 @@ namespace FaxCap.Manager
         private void Start()
         {
             GenerateQuestions();
+        }
+
+        public void StartRun()
+        {
             AssignNewQuestion();
             UpdateQuestionCount();
         }
@@ -66,7 +70,7 @@ namespace FaxCap.Manager
         private void UpdateQuestionCount()
         {
             questionCount++;
-            _uiGameScreen.UpdateQuestionCountText(questionCount);
+            _uiGameScreen.UpdateComboCounterText(questionCount);
         }
 
         public string GetQuestionText()
