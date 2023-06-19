@@ -36,6 +36,11 @@ namespace FaxCap.Installer
             Container
                 .Bind<ScoreManager>()
                 .To<ScoreManager>()
+                .AsSingle(); 
+            
+            Container
+                .Bind<ProgressManager>()
+                .To<ProgressManager>()
                 .AsSingle();
 
             Container
