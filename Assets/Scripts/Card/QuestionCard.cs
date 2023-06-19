@@ -104,7 +104,7 @@ namespace FaxCap.Card
             _audioSource.PlayOneShot(sfxs[Random.Range(0, sfxs.Length)]);
 
             var isDoublePointCard = CardType == CardType.DoublePoint;
-            _scoreManager.IncreaseScore(replyTimer, isDoublePointCard);
+            _scoreManager.AddScore(replyTimer, isDoublePointCard);
         }
 
         // TODO: Not sure if deck manager should fill this part
