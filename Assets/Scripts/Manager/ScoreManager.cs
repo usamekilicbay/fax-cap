@@ -1,11 +1,17 @@
+using FaxCap.Common.Abstract;
+using FaxCap.Common.Constant;
 using FaxCap.UI.Screen;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
 namespace FaxCap.Manager
 {
-    public class ScoreManager
+    public class ScoreManager : IRenewable
     {
+        private Dictionary<string, List<int>> _scoreStorage = new();
+
         private const int _reqularQuestionScore = 10;
         private const int _perfectScore = 10;
 
@@ -21,7 +27,7 @@ namespace FaxCap.Manager
             _uiGameScreen = uiGameScreen;
         }
 
-        public void IncreaseScore(float replyTimeSpan, bool isDoubleScore)
+        public void AddScore(float replyTimeSpan, bool isDoubleScore)
         {
             var tempScore = _reqularQuestionScore;
 
@@ -39,14 +45,42 @@ namespace FaxCap.Manager
                 ? 2
                 : 1;
 
-            _score += tempScore;
+            _scoreStorage[Key.Score.Question].Add(tempScore);
 
             _uiGameScreen.UpdateScoreText(_score);
         }
 
-        private bool IsPerfectReplyTime(float replyTimeSpan)
+        public void ResetScore()
         {
-            return replyTimeSpan >= _perfectScoreTimeSpan;
+            _scoreStorage[Key.Score.Question].Clear();
+        }
+
+        public void UpdateScore()
+        {
+            var scoreKeys = _scoreStorage.Keys;
+
+            var scoreCounter = 0;
+
+            foreach (var key in scoreKeys)
+            {
+                var scores = _scoreStorage[key];
+
+                foreach (var score in scores)
+                {
+                    scoreCounter += score;
+                    // TODO: Call score text particle spawn and text update here
+                }
+                
+                _score += scoreCounter;
+            }
+        }
+
+        private bool IsPerfectReplyTime(float replyTimeSpan)
+            => replyTimeSpan >= _perfectScoreTimeSpan;
+
+        public void Renew()
+        {
+            ResetScore();
         }
     }
 }
