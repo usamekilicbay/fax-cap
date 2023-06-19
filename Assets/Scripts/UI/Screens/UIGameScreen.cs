@@ -12,8 +12,12 @@ namespace FaxCap.UI.Screen
     {
         [SerializeField] private TextMeshProUGUI scoreText;
         [SerializeField] private TextMeshProUGUI comboCounterText;
+        [Header("Timer")]
         [SerializeField] private Slider timerIndicator;
         [SerializeField] private Image timerFill;
+        [Header("Progress")]
+        [SerializeField] private Slider progressIndicator;
+        [SerializeField] private Image progressFill;
 
         private Vector3 _scoreTextInitialSize;
         private Vector3 _comboCounterTextInitialSize;
@@ -22,9 +26,22 @@ namespace FaxCap.UI.Screen
 
         private void Awake()
         {
+            Setup();
+
             _scoreTextInitialSize = scoreText.rectTransform.sizeDelta;
             _comboCounterTextInitialSize = comboCounterText.rectTransform.sizeDelta;
 
+            AnimationSetup();
+        }
+
+        private void Setup()
+        {
+            progressIndicator.maxValue = 10;
+            timerIndicator.maxValue = 10;
+        }
+
+        private void AnimationSetup()
+        {
             _scoreScaleTween = scoreText.rectTransform.DOSizeDelta(_scoreTextInitialSize * 2f, 0.2f);
             _scoreScaleTween.SetLoops(2, LoopType.Yoyo);
             _scoreScaleTween.SetAutoKill(false);
@@ -36,6 +53,7 @@ namespace FaxCap.UI.Screen
             _comboCounterScaleTween.Pause();
             _comboCounterScaleTween.SetDelay(0.3f);
         }
+
         int i;
         private void Update()
         {
@@ -72,6 +90,16 @@ namespace FaxCap.UI.Screen
             timerIndicator.value = timeSpan;
             float normalizedTime = timeSpan / QuestionManager.ReplyTimerLimit;
             timerFill.color = Color.Lerp(Color.red, Color.green, normalizedTime);
+        }
+
+        public void UpdateProgress(float progress)
+        {
+            progressIndicator.DOValue(progress, 0.5f);
+        }
+        
+        public void LoseProgress(float progress)
+        {
+            progressIndicator.DOValue(progress, 0.5f);
         }
 
         public override Task Show()
