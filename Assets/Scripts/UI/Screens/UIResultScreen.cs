@@ -18,10 +18,20 @@ namespace FaxCap.UI.Screen
         [SerializeField] private Slider levelBar;
         [SerializeField] private TextMeshProUGUI currentLevelText;
         [SerializeField] private TextMeshProUGUI nextLevelText;
+        [SerializeField] private TextMeshProUGUI expText;
         [Space(10)]
-        [SerializeField] private TextMeshProUGUI questionCountText;
-        [SerializeField] private TextMeshProUGUI highScoreText;
+        [Header("Score")]
+        [SerializeField] private TextMeshProUGUI scoreBestLabel;
         [SerializeField] private TextMeshProUGUI scoreText;
+        [Space(10)]
+        [Header("Question Count")]
+        [SerializeField] private TextMeshProUGUI questionCountBestLabel;
+        [SerializeField] private TextMeshProUGUI questionCountText;
+        [Space(10)]
+        [Header("Combo")]
+        [SerializeField] private TextMeshProUGUI comboBestLabel;
+        [SerializeField] private TextMeshProUGUI comboText;
+        [Space(10)]
         [Header("Prefab")]
         [SerializeField] private GameObject scoreTextPrefab;
 
@@ -64,7 +74,7 @@ namespace FaxCap.UI.Screen
                 await GenerateScoreTextAsync(score);
                 totalScore += score;
 
-             // TODO: Update score with animation!!
+                // TODO: Update score with animation!!
 
                 scoreText.SetText($"{totalScore}");
             }
@@ -80,14 +90,25 @@ namespace FaxCap.UI.Screen
 
         public void UpdateHighScoreText(int highScore)
         {
-            highScoreText.enabled = true;
-            highScoreText.SetText($"High Score");
+            questionCountBestLabel.enabled = true;
+            questionCountBestLabel.SetText($"High Score");
             //highScoreText.SetText($"High Score: {highScore}");
+        }
+
+        public void UpdateComboText(int combo)
+        {
+            comboText.SetText($"{combo}");
         }
 
         public void UpdateLevelBar(float exp)
         {
-            levelBar.DOValue(exp, 0.5f);
+            levelBar.DOValue(exp, 0.5f)
+                .OnUpdate(UpdateExpText);
+        }
+
+        private void UpdateExpText()
+        {
+            expText.SetText($"{levelBar.value}/{levelBar.maxValue}");
         }
 
         public void UpdateLevelTexts(int currentLevel)
@@ -122,7 +143,7 @@ namespace FaxCap.UI.Screen
 
         public void Renew()
         {
-            highScoreText.enabled = false;
+            questionCountBestLabel.enabled = false;
         }
     }
 }
