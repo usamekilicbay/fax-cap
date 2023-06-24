@@ -1,3 +1,4 @@
+using FaxCap.Common.Abstract;
 using FaxCap.Entity;
 using FaxCap.UI.Screen;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using Zenject;
 
 namespace FaxCap.Manager
 {
-    public class QuestionManager : MonoBehaviour
+    public class QuestionManager : IRenewable
     {
         private List<Question> _questions = new();
         private Question _question;
@@ -78,5 +79,10 @@ namespace FaxCap.Manager
 
         public bool CheckAnswer(bool answer)
             => _question.Answer == answer;
+
+        public void Renew()
+        {
+            questionCount = 0;
+        }
     }
 }

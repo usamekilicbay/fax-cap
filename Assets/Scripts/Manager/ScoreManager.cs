@@ -8,7 +8,7 @@ using Zenject;
 
 namespace FaxCap.Manager
 {
-    public class ScoreManager : IRenewable
+    public class ScoreManager : IRenewable, ICompletable
     {
         private readonly Dictionary<string, List<int>> _scoreStorage = new();
 
@@ -19,12 +19,15 @@ namespace FaxCap.Manager
         private int _comboCounter = 1;
         private const float _perfectScoreTimeSpan = 0f;
 
-        private UIGameScreen _uiGameScreen;
+        private UIGameScreen _gameScreen;
+        private UIResultScreen _resultScreen;
 
         [Inject]
-        public void Construct(UIGameScreen uiGameScreen)
+        public void Construct(UIGameScreen gameScreen,
+            UIResultScreen resultScreen)
         {
-            _uiGameScreen = uiGameScreen;
+            _gameScreen = gameScreen;
+            _resultScreen = resultScreen;
 
             Setup();
         }
@@ -43,7 +46,7 @@ namespace FaxCap.Manager
                 tempScore = _perfectScore;
                 _comboCounter++;
                 Debug.Log(_comboCounter);
-                _uiGameScreen.UpdateComboCounterText(_comboCounter);
+                _gameScreen.UpdateComboCounterText(_comboCounter);
             }
             else
                 _comboCounter = 1;
@@ -54,7 +57,7 @@ namespace FaxCap.Manager
 
             _scoreStorage[Key.Score.Question].Add(tempScore);
 
-            _uiGameScreen.UpdateScoreText(tempScore);
+            _gameScreen.UpdateScoreText(tempScore);
         }
 
         public void ResetScore()
@@ -64,23 +67,16 @@ namespace FaxCap.Manager
             keys.ForEach(x => _scoreStorage[Key.Score.Question].Clear());
         }
 
-        public void UpdateScore()
+        public async void UpdateScore()
         {
             var scoreKeys = _scoreStorage.Keys;
-
-            var scoreCounter = 0;
 
             foreach (var key in scoreKeys)
             {
                 var scores = _scoreStorage[key];
 
-                foreach (var score in scores)
-                {
-                    scoreCounter += score;
-                    // TODO: Call score text particle spawn and text update here
-                }
-
-                _score += scoreCounter;
+                await _resultScreen.UpdateScoreTextAsync(scores);
+                _score += scores.Sum();
             }
         }
 
@@ -90,6 +86,11 @@ namespace FaxCap.Manager
         public void Renew()
         {
             ResetScore();
+        }
+
+        public void Complete()
+        {
+            UpdateScore();
         }
     }
 }
