@@ -25,7 +25,7 @@ namespace FaxCap.Installer
             
             Container
                 .Bind<QuestionManager>()
-                .FromComponentInHierarchy()
+                .To<QuestionManager>()
                 .AsSingle();
 
             Container
@@ -36,6 +36,11 @@ namespace FaxCap.Installer
             Container
                 .Bind<ScoreManager>()
                 .To<ScoreManager>()
+                .AsSingle(); 
+            
+            Container
+                .Bind<LevelManager>()
+                .To<LevelManager>()
                 .AsSingle(); 
             
             Container
