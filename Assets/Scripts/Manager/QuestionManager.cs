@@ -70,7 +70,7 @@ namespace FaxCap.Manager
         private void UpdateQuestionCount()
         {
             questionCount++;
-            _uiGameScreen.UpdateComboCounterText(questionCount);
+            //_uiGameScreen.UpdateQuestionCounterText(questionCount);
         }
 
         public string GetQuestionText()
