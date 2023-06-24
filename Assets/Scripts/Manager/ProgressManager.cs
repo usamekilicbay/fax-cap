@@ -1,13 +1,12 @@
 using FaxCap.UI.Screen;
-using UnityEngine;
 using Zenject;
 
 namespace FaxCap.Manager
 {
-    public class ProgressManager : MonoBehaviour
+    public class ProgressManager
     {
         private const int _milestone = 3;
-        private int progress;
+        private int _progress;
 
         private UIGameScreen _gameScreen;
 
@@ -19,7 +18,7 @@ namespace FaxCap.Manager
 
         public void Progress()
         {
-            progress++;
+            _progress++;
 
             if (HasReachedToMilestone())
             {
@@ -29,11 +28,11 @@ namespace FaxCap.Manager
 
         private void Milestone()
         {
-            _gameScreen.UpdateProgress(progress);
-            progress = 0;
+            _gameScreen.UpdateProgressBar(_progress);
+            _progress = 0;
         }
 
         public bool HasReachedToMilestone()
-            => progress == _milestone;
+            => _progress == _milestone;
     }
 }
