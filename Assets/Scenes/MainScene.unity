@@ -458,7 +458,7 @@ GameObject:
   - component: {fileID: 133015189}
   - component: {fileID: 133015188}
   m_Layer: 5
-  m_Name: Question Count Text
+  m_Name: Question Counter Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1279,7 +1279,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &254306977
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1325,7 +1325,7 @@ MonoBehaviour:
   expText: {fileID: 291323197}
   scoreBestLabel: {fileID: 187676357}
   scoreText: {fileID: 1476075993}
-  questionCountBestLabel: {fileID: 302225784}
+  questionCounterBestLabel: {fileID: 133015188}
   questionCountText: {fileID: 133015188}
   comboBestLabel: {fileID: 192410405}
   comboText: {fileID: 1336326532}
@@ -1514,7 +1514,7 @@ GameObject:
   - component: {fileID: 302225785}
   - component: {fileID: 302225784}
   m_Layer: 5
-  m_Name: Question Best Label
+  m_Name: Question Counter Best Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4226,7 +4226,7 @@ RectTransform:
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}

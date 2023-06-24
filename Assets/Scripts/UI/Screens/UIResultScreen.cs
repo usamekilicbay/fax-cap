@@ -25,7 +25,7 @@ namespace FaxCap.UI.Screen
         [SerializeField] private TextMeshProUGUI scoreText;
         [Space(10)]
         [Header("Question Count")]
-        [SerializeField] private TextMeshProUGUI questionCountBestLabel;
+        [SerializeField] private TextMeshProUGUI questionCounterBestLabel;
         [SerializeField] private TextMeshProUGUI questionCountText;
         [Space(10)]
         [Header("Combo")]
@@ -55,14 +55,14 @@ namespace FaxCap.UI.Screen
                 .AddListener(GoToHomeScreen);
         }
 
-        private void GoToHomeScreen()
-        {
-            uiManager.ShowScreen(_uiHomeScreen);
-        }
-
         public void UpdateQuestionText(int questionCount)
         {
             questionCountText.SetText($"Questions: {questionCount}");
+        }
+
+        public void UpdateScoreText(int score)
+        {
+            scoreText.SetText($"{score}");
         }
 
         public async Task UpdateScoreTextAsync(IReadOnlyCollection<int> scores)
@@ -80,6 +80,21 @@ namespace FaxCap.UI.Screen
             }
         }
 
+        public void ShowScoreBestLabel()
+        {
+            scoreBestLabel.enabled = true;
+        }
+
+        public void ShowQuestionCounterBestLabel()
+        {
+            questionCounterBestLabel.enabled = true;
+        }
+
+        public void ShowComboBestLabel()
+        {
+            comboBestLabel.enabled = true;
+        }
+
         private void AnimateScore(int currentScore, int targetScore)
         {
             DOTween.To(() => currentScore, x => currentScore = x, targetScore, 0.3f)
@@ -90,8 +105,8 @@ namespace FaxCap.UI.Screen
 
         public void UpdateHighScoreText(int highScore)
         {
-            questionCountBestLabel.enabled = true;
-            questionCountBestLabel.SetText($"High Score");
+            questionCounterBestLabel.enabled = true;
+            questionCounterBestLabel.SetText($"High Score");
             //highScoreText.SetText($"High Score: {highScore}");
         }
 
@@ -117,7 +132,7 @@ namespace FaxCap.UI.Screen
             nextLevelText.SetText($"Level: {currentLevel + 1}");
         }
 
-        private async Task GenerateScoreTextAsync(int score)
+        public async Task GenerateScoreTextAsync(int score)
         {
             var scoreText = Instantiate(scoreTextPrefab)
                 .GetComponent<TextMeshProUGUI>();
@@ -127,6 +142,11 @@ namespace FaxCap.UI.Screen
             var scoreTextTween = scoreText.rectTransform.DOAnchorPos(scoreText.rectTransform.anchoredPosition, 0.3f);
             scoreTextTween.OnUpdate(() => scoreText.DOFade(0, 0.3f));
             await scoreTextTween.AsyncWaitForCompletion();
+        }
+
+        private void GoToHomeScreen()
+        {
+            uiManager.ShowScreen(_uiHomeScreen);
         }
 
         public override Task Show()
@@ -143,7 +163,7 @@ namespace FaxCap.UI.Screen
 
         public void Renew()
         {
-            questionCountBestLabel.enabled = false;
+            questionCounterBestLabel.enabled = false;
         }
     }
 }
