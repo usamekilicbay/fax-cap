@@ -22,7 +22,9 @@ namespace FaxCap.UI.Screen
         [SerializeField] private Slider timeBar;
         [SerializeField] private Image timeFill;
 
-        private Color _backgroundInitialColor;
+        public Color BackgroundInitialColor { get; private set; }
+        public Color BackgroundCurrentColor { get; private set; }
+
         private Vector3 _scoreTextInitialSize;
         private Vector3 _comboCounterTextInitialSize;
         private Tween _scoreScaleTween;
@@ -40,7 +42,7 @@ namespace FaxCap.UI.Screen
 
         private void Setup()
         {
-            _backgroundInitialColor = background.color;
+            BackgroundInitialColor = background.color;
             progressBar.maxValue = 10;
             //timeBar.maxValue = 10;
         }
@@ -71,7 +73,14 @@ namespace FaxCap.UI.Screen
 
         public void UpdateBackgroundColor(Color color)
         {
-            background.color = color;
+            BackgroundCurrentColor = color;
+            background.color = BackgroundCurrentColor;
+        }
+
+        public void ResetBackgroundColor()
+        {
+            BackgroundCurrentColor = BackgroundInitialColor;
+            background.DOColor(BackgroundCurrentColor, 0.5f);
         }
 
         public void UpdateScoreText(int score)
@@ -121,7 +130,7 @@ namespace FaxCap.UI.Screen
 
         public void Renew()
         {
-            background.color = _backgroundInitialColor;
+            background.color = BackgroundInitialColor;
             UpdateScoreText(0);
             UpdateComboCounterText(1);
             UpdateProgressBar(0);
