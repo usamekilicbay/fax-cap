@@ -31,7 +31,6 @@ namespace FaxCap.Card
         private Quaternion initialRotation;
         private bool isDragging = false;
 
-        private Color bgColor;
         public CardType CardType;
 
         public float swipeThreshold = 100f; // Minimum distance to trigger swipe
@@ -104,7 +103,8 @@ namespace FaxCap.Card
 
             // Smoothly interpolate the background color between red (left side), white (midpoint), and green (right side)
             Color targetColor = Color.Lerp(Color.red, Color.green, normalizedPosition);
-            targetColor = Color.Lerp(bgColor, targetColor, Mathf.Abs(normalizedPosition - 0.5f) * 2f); // Smoothly interpolate to white at the midpoint
+            // Smoothly interpolate to white at the midpoint
+            targetColor = Color.Lerp(gameScreen.BackgroundInitialColor, targetColor, Mathf.Abs(normalizedPosition - 0.5f) * 2f);
             gameScreen.UpdateBackgroundColor(targetColor);
 
             isDragging = true;
@@ -114,25 +114,23 @@ namespace FaxCap.Card
         {
             isDragging = false;
 
-
             // Calculate the distance of the drag
             float dragDistance = eventData.position.x - eventData.pressPosition.x;
 
-            // If the drag distance exceeds the threshold, call the appropriate method
-            if (Mathf.Abs(dragDistance) >= swipeThreshold)
+            // If the drag distance does not exceed the threshold, call the reset the card positon and the background color
+            if (Mathf.Abs(dragDistance) < swipeThreshold)
             {
-                isDone = true;
-
-                if (dragDistance > 0f)
-                    SwipeRight();
-                else
-                    SwipeLeft();
-            }
-            else
                 // Reset card position and rotation if the drag distance is below the threshold
                 ResetCard();
+                return;
+            }
 
-            Camera.main.DOColor(bgColor, 0.5f);
+            isDone = true;
+
+            if (dragDistance > 0f)
+                SwipeRight();
+            else
+                SwipeLeft();
         }
 
         #endregion
@@ -197,10 +195,21 @@ namespace FaxCap.Card
 
         private void ResetCard()
         {
+            var duration = 0.5f;
+            var color = gameScreen.BackgroundCurrentColor;
+            var targetColor = gameScreen.BackgroundInitialColor;
+
             // Reset card position and rotation
-            cardTransform.anchoredPosition = initialPosition;
-            cardTransform.rotation = initialRotation;
+            var sequence = DOTween.Sequence();
+            sequence.Append(cardTransform.DOAnchorPos(initialPosition, duration));
+            sequence.Join(cardTransform.DORotateQuaternion(initialRotation, duration));
+            sequence.Join(DOTween.To(() => color, x => color = x, targetColor, duration)
+                .OnUpdate(() =>
+                {
+                    gameScreen.UpdateBackgroundColor(color);
+                }));
         }
+
 
         private void VanishCard()
         {
