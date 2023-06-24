@@ -10,7 +10,7 @@ namespace FaxCap.Manager
 {
     public class ScoreManager : IRenewable
     {
-        private Dictionary<string, List<int>> _scoreStorage = new();
+        private readonly Dictionary<string, List<int>> _scoreStorage = new();
 
         private const int _reqularQuestionScore = 10;
         private const int _perfectScore = 10;
@@ -25,6 +25,13 @@ namespace FaxCap.Manager
         public void Construct(UIGameScreen uiGameScreen)
         {
             _uiGameScreen = uiGameScreen;
+
+            Setup();
+        }
+
+        private void Setup()
+        {
+            _scoreStorage.Add(Key.Score.Question, new List<int>());
         }
 
         public void AddScore(float replyTimeSpan, bool isDoubleScore)
@@ -47,12 +54,14 @@ namespace FaxCap.Manager
 
             _scoreStorage[Key.Score.Question].Add(tempScore);
 
-            _uiGameScreen.UpdateScoreText(_score);
+            _uiGameScreen.UpdateScoreText(tempScore);
         }
 
         public void ResetScore()
         {
-            _scoreStorage[Key.Score.Question].Clear();
+            var keys = _scoreStorage.Keys.ToList();
+
+            keys.ForEach(x => _scoreStorage[Key.Score.Question].Clear());
         }
 
         public void UpdateScore()
@@ -70,7 +79,7 @@ namespace FaxCap.Manager
                     scoreCounter += score;
                     // TODO: Call score text particle spawn and text update here
                 }
-                
+
                 _score += scoreCounter;
             }
         }
