@@ -15,12 +15,16 @@ namespace FaxCap.Card
         [Header("Front")]
         [SerializeField] private Image frontArtwork;
         [SerializeField] private Image topBar;
-        [SerializeField] private Image categoryIcon;
         [SerializeField] private TextMeshProUGUI questionText;
+        [Header("Time")]
+        [SerializeField] private Slider timeBar;
+        [SerializeField] private Image timeFill;
         [Space(10)]
         [Header("Back")]
         [SerializeField] private Image backArtwork;
+        [SerializeField] private Image categoryIcon;
         [Space(10)]
+        [Header("Effects")]
         [SerializeField] private AudioClip[] sfxs;
         [SerializeField] Sprite[] cardBackArtworks;
 
@@ -57,6 +61,8 @@ namespace FaxCap.Card
             base.Start();
 
             replyTimer = _replyTimeLimit;
+            timeBar.maxValue = _replyTimeLimit;
+            timeBar.value = _replyTimeLimit;
         }
 
         protected override void Update()
@@ -65,10 +71,17 @@ namespace FaxCap.Card
                 return;
 
             replyTimer -= Time.deltaTime;
-            _uiGameScreen.UpdateTimerBar(replyTimer);
+            UpdateTimeBar(replyTimer);
 
             if (replyTimer <= 0f)
                 GameOver();
+        }
+
+        public void UpdateTimeBar(float timeSpan)
+        {
+            timeBar.value = timeSpan;
+            //float normalizedTime = timeSpan / QuestionManager.ReplyTimerLimit;
+            //timeFill.color = Color.Lerp(Color.red, Color.green, normalizedTime);
         }
 
         protected override void SwipeLeft()
