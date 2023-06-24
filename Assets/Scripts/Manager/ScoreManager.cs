@@ -16,7 +16,7 @@ namespace FaxCap.Manager
         private const int _perfectScore = 10;
 
         private int _score;
-        private int _comboCounter = 1;
+        private int _comboCounter = 0;
         private const float _perfectScoreTimeSpan = 0f;
 
         private UIGameScreen _gameScreen;
