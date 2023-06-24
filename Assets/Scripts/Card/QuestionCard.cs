@@ -35,17 +35,17 @@ namespace FaxCap.Card
         private GameManager _gameManager;
         private ScoreManager _scoreManager;
         private QuestionManager _questionManager;
-        private UIGameScreen _uiGameScreen;
+        private UIGameScreen _gameScreen;
 
         [Inject]
         public void Construct(GameManager gameManager,
             ScoreManager scoreManager,
-            UIGameScreen uiGameScreen,
+            UIGameScreen gameScreen,
             QuestionManager questionManager)
         {
             _gameManager = gameManager;
             _scoreManager = scoreManager;
-            _uiGameScreen = uiGameScreen;
+            _gameScreen = gameScreen;
             _questionManager = questionManager;
         }
 
@@ -102,6 +102,8 @@ namespace FaxCap.Card
 
         private void Answer(bool answer)
         {
+            gameScreen.ResetBackgroundColor();
+
             isTimerStart = false;
 
             var wrongAnswer = !_questionManager.CheckAnswer(answer);
