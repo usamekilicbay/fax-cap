@@ -10,15 +10,19 @@ namespace FaxCap.UI.Screen
 {
     public class UIGameScreen : UIScreenBase, IRenewable
     {
+        [SerializeField] private Image background;
         [SerializeField] private TextMeshProUGUI scoreText;
         [SerializeField] private TextMeshProUGUI comboCounterText;
-        [Header("Timer")]
-        [SerializeField] private Slider timerIndicator;
-        [SerializeField] private Image timerFill;
+        [Space(10)]
         [Header("Progress")]
-        [SerializeField] private Slider progressIndicator;
+        [SerializeField] private Slider progressBar;
         [SerializeField] private Image progressFill;
+        [Space(10)]
+        [Header("Time")]
+        [SerializeField] private Slider timeBar;
+        [SerializeField] private Image timeFill;
 
+        private Color _backgroundInitialColor;
         private Vector3 _scoreTextInitialSize;
         private Vector3 _comboCounterTextInitialSize;
         private Tween _scoreScaleTween;
@@ -36,8 +40,9 @@ namespace FaxCap.UI.Screen
 
         private void Setup()
         {
-            progressIndicator.maxValue = 10;
-            timerIndicator.maxValue = 10;
+            _backgroundInitialColor = background.color;
+            progressBar.maxValue = 10;
+            //timeBar.maxValue = 10;
         }
 
         private void AnimationSetup()
@@ -57,11 +62,16 @@ namespace FaxCap.UI.Screen
         int i;
         private void Update()
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(2))
             {
                 i++;
                 UpdateComboCounterText(i);
             }
+        }
+
+        public void UpdateBackgroundColor(Color color)
+        {
+            background.color = color;
         }
 
         public void UpdateScoreText(int score)
@@ -85,21 +95,16 @@ namespace FaxCap.UI.Screen
             PlayComboCounterScaleTween();
         }
 
-        public void UpdateTimerBar(float timeSpan)
+        public void UpdateTimeBar(float timeSpan)
         {
-            timerIndicator.value = timeSpan;
+            timeBar.value = timeSpan;
             float normalizedTime = timeSpan / QuestionManager.ReplyTimerLimit;
-            timerFill.color = Color.Lerp(Color.red, Color.green, normalizedTime);
+            timeFill.color = Color.Lerp(Color.red, Color.green, normalizedTime);
         }
 
-        public void UpdateProgress(float progress)
+        public void UpdateProgressBar(int progress)
         {
-            progressIndicator.DOValue(progress, 0.5f);
-        }
-        
-        public void LoseProgress(float progress)
-        {
-            progressIndicator.DOValue(progress, 0.5f);
+            progressBar.DOValue(progress, 0.5f);
         }
 
         public override Task Show()
@@ -116,8 +121,10 @@ namespace FaxCap.UI.Screen
 
         public void Renew()
         {
+            background.color = _backgroundInitialColor;
             UpdateScoreText(0);
             UpdateComboCounterText(1);
+            UpdateProgressBar(0);
         }
 
         private void PlayScoreScaleTween()
