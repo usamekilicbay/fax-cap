@@ -15,17 +15,13 @@ namespace FaxCap.Manager
 
         public const float ReplyTimerLimit = 5f;
 
-        private ScoreManager _scoreManager;
         private UIGameScreen _uiGameScreen;
 
         [Inject]
         public void Construct(UIGameScreen uiGameScreen)
         {
             _uiGameScreen = uiGameScreen;
-        }
 
-        private void Start()
-        {
             GenerateQuestions();
         }
 
