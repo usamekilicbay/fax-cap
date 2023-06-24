@@ -1,6 +1,7 @@
 using DG.Tweening;
 using FaxCap.Common.Types;
 using FaxCap.Manager;
+using FaxCap.UI.Screen;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,7 +14,7 @@ namespace FaxCap.Card
     {
         [SerializeField] private GameObject frontSide;
         [SerializeField] private GameObject backSide;
-        [SerializeField] private SpriteRenderer cloakRenderer;
+        [SerializeField] private CanvasGroup canvasGroup;
 
         protected RectTransform cardTransform;
 
@@ -45,12 +46,15 @@ namespace FaxCap.Card
 
         protected DeckManager deckManager;
         protected ICurrencyManager currencyManager;
+        protected UIGameScreen gameScreen;
 
         [Inject]
-        public void Construct(CardFacade cardFacade)
+        public void Construct(CardFacade cardFacade,
+            UIGameScreen gameScreen)
         {
             deckManager = cardFacade.DeckManager;
             currencyManager = cardFacade.CurrencyManager;
+            this.gameScreen = gameScreen;
         }
 
         #endregion
@@ -101,7 +105,7 @@ namespace FaxCap.Card
             // Smoothly interpolate the background color between red (left side), white (midpoint), and green (right side)
             Color targetColor = Color.Lerp(Color.red, Color.green, normalizedPosition);
             targetColor = Color.Lerp(bgColor, targetColor, Mathf.Abs(normalizedPosition - 0.5f) * 2f); // Smoothly interpolate to white at the midpoint
-            Camera.main.backgroundColor = targetColor;
+            gameScreen.UpdateBackgroundColor(targetColor);
 
             isDragging = true;
         }
@@ -148,14 +152,14 @@ namespace FaxCap.Card
             cardTransform = GetComponent<RectTransform>();
             initialPosition = cardTransform.anchoredPosition;
             initialRotation = cardTransform.rotation;
-
-            bgColor = Camera.main.backgroundColor; 
         }
 
         private void FlipCard()
         {
-            cardTransform.DORotate(cardTransform.rotation.eulerAngles + Vector3.up * 90, 1f)
-                .OnComplete(UpdateShownSide);
+            var sequence = DOTween.Sequence();
+            sequence.Append(cardTransform.DORotate(cardTransform.rotation.eulerAngles + Vector3.up * 90, 0.5f));
+            sequence.Join(canvasGroup.DOFade(0f, 0.5f));
+            sequence.OnComplete(UpdateShownSide);
         }
 
         private void UpdateShownSide()
@@ -173,8 +177,10 @@ namespace FaxCap.Card
                 _isBackSideShown = true;
             }
 
-            cardTransform.DORotate(Vector3.zero, 1f)
-                .OnComplete(() => isTimerStart = true);
+            var sequence = DOTween.Sequence();
+            sequence.Append(cardTransform.DORotate(Vector3.zero, 0.5f));
+            sequence.Join(canvasGroup.DOFade(1f, 0.5f));
+            sequence.OnComplete(() => isTimerStart = true);
         }
 
         protected virtual void SwipeRight()
@@ -196,7 +202,7 @@ namespace FaxCap.Card
             cardTransform.rotation = initialRotation;
         }
 
-        private void VanishCard() 
+        private void VanishCard()
         {
             Destroy(gameObject);
             //cloakRenderer.DOFade(1, 0.5f)
