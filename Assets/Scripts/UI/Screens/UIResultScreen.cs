@@ -32,8 +32,11 @@ namespace FaxCap.UI.Screen
         [SerializeField] private TextMeshProUGUI comboBestLabel;
         [SerializeField] private TextMeshProUGUI comboText;
         [Space(10)]
-        [Header("Prefab")]
-        [SerializeField] private GameObject scoreTextPrefab;
+        [Header("Effects")]
+        [SerializeField] private RectTransform scoreAnimationTextSpawnPoint;
+        [SerializeField] private GameObject scoreAnimationTextPrefab;
+
+        private RectTransform _scoreRectTransform;
 
         private GameManager _gameManager;
         private UIHomeScreen _uiHomeScreen;
@@ -53,6 +56,8 @@ namespace FaxCap.UI.Screen
         {
             homeButton.onClick
                 .AddListener(GoToHomeScreen);
+
+            _scoreRectTransform = scoreText.transform.parent.GetComponent<RectTransform>();
         }
 
         public void UpdateQuestionText(int questionCount)
@@ -134,14 +139,29 @@ namespace FaxCap.UI.Screen
 
         public async Task GenerateScoreTextAsync(int score)
         {
-            var scoreText = Instantiate(scoreTextPrefab)
+            var duration = 1f;
+
+            var targetPos = scoreText.rectTransform.position;
+            var leftBorder = scoreText.rectTransform.rect.xMin;
+            var rightBorder = scoreText.rectTransform.rect.xMax;
+
+            var spawnPos = new Vector2
+            {
+                x = Random.Range(leftBorder, rightBorder),
+                y = 0f
+            };
+
+            var scoreAnimationText = Instantiate(scoreAnimationTextPrefab, scoreAnimationTextSpawnPoint)
                 .GetComponent<TextMeshProUGUI>();
 
-            scoreText.SetText(score.ToString());
+            scoreAnimationText.rectTransform.anchoredPosition = spawnPos;
 
-            var scoreTextTween = scoreText.rectTransform.DOAnchorPos(scoreText.rectTransform.anchoredPosition, 0.3f);
-            scoreTextTween.OnUpdate(() => scoreText.DOFade(0, 0.3f));
-            await scoreTextTween.AsyncWaitForCompletion();
+            scoreAnimationText.SetText(score.ToString());
+
+            var sequence = DOTween.Sequence();
+            sequence.Append(scoreAnimationText.rectTransform.DOMoveY(targetPos.y, duration));
+            sequence.Join(scoreAnimationText.DOFade(0, duration));
+            await sequence.AsyncWaitForCompletion();
         }
 
         private void GoToHomeScreen()
