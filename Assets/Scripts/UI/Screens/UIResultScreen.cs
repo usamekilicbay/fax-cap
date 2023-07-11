@@ -15,7 +15,7 @@ namespace FaxCap.UI.Screen
     {
         [SerializeField] private Button homeButton;
         [Header("Level")]
-        [SerializeField] private Slider levelBar;
+        [SerializeField] private Slider expBar;
         [SerializeField] private TextMeshProUGUI currentLevelText;
         [SerializeField] private TextMeshProUGUI nextLevelText;
         [SerializeField] private TextMeshProUGUI expText;
@@ -37,6 +37,7 @@ namespace FaxCap.UI.Screen
         [SerializeField] private GameObject scoreAnimationTextPrefab;
 
         private RectTransform _scoreRectTransform;
+        private Vector2 _scoreTextInitialSize;
 
         private GameManager _gameManager;
         private UIHomeScreen _uiHomeScreen;
@@ -58,6 +59,7 @@ namespace FaxCap.UI.Screen
                 .AddListener(GoToHomeScreen);
 
             _scoreRectTransform = scoreText.transform.parent.GetComponent<RectTransform>();
+            _scoreTextInitialSize = scoreText.rectTransform.sizeDelta;
         }
 
         public void UpdateQuestionText(int questionCount)
@@ -76,12 +78,12 @@ namespace FaxCap.UI.Screen
 
             foreach (var score in scores)
             {
-                await GenerateScoreTextAsync(score);
+                //await GenerateScoreTextAsync(score);
+                GenerateScoreTextAsync(score);
+                var currentScore = totalScore;
                 totalScore += score;
 
-                // TODO: Update score with animation!!
-
-                scoreText.SetText($"{totalScore}");
+                await AnimateScore(currentScore, totalScore);
             }
         }
 
@@ -100,12 +102,29 @@ namespace FaxCap.UI.Screen
             comboBestLabel.enabled = true;
         }
 
-        private void AnimateScore(int currentScore, int targetScore)
+        private async Task AnimateScore(int currentScore, int targetScore)
         {
-            DOTween.To(() => currentScore, x => currentScore = x, targetScore, 0.3f)
-                .SetEase(Ease.Linear)
-                .OnUpdate(() => scoreText.SetText(currentScore.ToString()))
-                .OnComplete(() => scoreText.SetText(targetScore.ToString()));
+            var duration = 0.3f;
+
+            var scoreUpdateTween = DOTween.To(() => currentScore, x => currentScore = x, targetScore, duration);
+            scoreUpdateTween.SetEase(Ease.Linear);
+            scoreUpdateTween.Pause();
+
+            var targetSize = _scoreTextInitialSize * 2f;
+
+            var scoreSizeTween = scoreText.rectTransform.DOSizeDelta(targetSize, duration);
+            scoreSizeTween.SetEase(Ease.InBack);
+            scoreSizeTween.SetLoops(2, LoopType.Yoyo);
+            scoreSizeTween.Pause();
+
+            var sequence = DOTween.Sequence();
+            sequence.Append(scoreUpdateTween);
+            sequence.Join(scoreSizeTween);
+            sequence.OnUpdate(() => scoreText.SetText(currentScore.ToString()));
+            sequence.OnComplete(() => scoreText.SetText(targetScore.ToString()));
+            sequence.Restart();
+
+            await sequence.AsyncWaitForCompletion();
         }
 
         public void UpdateHighScoreText(int highScore)
@@ -120,15 +139,46 @@ namespace FaxCap.UI.Screen
             comboText.SetText($"{combo}");
         }
 
-        public void UpdateLevelBar(float exp)
+        public async void UpdateLevel(float exp, int currentLevel)
         {
-            levelBar.DOValue(exp, 0.5f)
-                .OnUpdate(UpdateExpText);
+            await UpdateExpBar(exp, currentLevel);
+        }
+
+        private async Task UpdateExpBar(float exp, int currentLevel)
+        {
+            var requiredExp = expBar.maxValue - expBar.value;
+            var target = requiredExp < exp
+                ? exp
+                : expBar.maxValue;
+
+            var remainingExp = exp - requiredExp;
+            var level = currentLevel;
+
+            if (requiredExp < exp)
+            {
+                target = expBar.maxValue;
+
+                var expBarFillTween = expBar.DOValue(target, 0.5f);
+                expBarFillTween.OnUpdate(UpdateExpText);
+                expBarFillTween.OnComplete(async () =>
+                {
+                    UpdateLevelTexts(level);
+                    level++;
+                    await UpdateExpBar(remainingExp, level);
+                });
+            }
+            else
+            {
+                var expBarFillTween = expBar.DOValue(target, 0.5f);
+                expBarFillTween.OnUpdate(UpdateExpText);
+
+                await expBarFillTween.AsyncWaitForCompletion();
+            }
         }
 
         private void UpdateExpText()
         {
-            expText.SetText($"{levelBar.value}/{levelBar.maxValue}");
+            expText.SetText($"{expBar.value}/{expBar.maxValue}");
         }
 
         public void UpdateLevelTexts(int currentLevel)
@@ -137,9 +187,10 @@ namespace FaxCap.UI.Screen
             nextLevelText.SetText($"Level: {currentLevel + 1}");
         }
 
-        public async Task GenerateScoreTextAsync(int score)
+        //public async Task GenerateScoreTextAsync(int score)
+        public void GenerateScoreTextAsync(int score)
         {
-            var duration = 1f;
+            var duration = 0.5f;
 
             var targetPos = scoreText.rectTransform.position;
             var leftBorder = scoreText.rectTransform.rect.xMin;
@@ -161,7 +212,7 @@ namespace FaxCap.UI.Screen
             var sequence = DOTween.Sequence();
             sequence.Append(scoreAnimationText.rectTransform.DOMoveY(targetPos.y, duration));
             sequence.Join(scoreAnimationText.DOFade(0, duration));
-            await sequence.AsyncWaitForCompletion();
+            //await sequence.AsyncWaitForCompletion();
         }
 
         private void GoToHomeScreen()
