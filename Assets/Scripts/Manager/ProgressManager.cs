@@ -1,3 +1,4 @@
+using FaxCap.Common.Constant;
 using FaxCap.UI.Screen;
 using Zenject;
 
@@ -5,34 +6,37 @@ namespace FaxCap.Manager
 {
     public class ProgressManager
     {
-        private const int _milestone = 3;
         private int _progress;
 
         private UIGameScreen _gameScreen;
+        private ConfigurationManager _configurationManager;
 
         [Inject]
-        public void Construct(UIGameScreen gameScreen)
+        public void Construct(UIGameScreen gameScreen,
+            ConfigurationManager configurationManager)
         {
             _gameScreen = gameScreen;
+            _configurationManager = configurationManager;
         }
 
-        public void Progress()
+        public async void Progress()
         {
             _progress++;
+            await _gameScreen.UpdateProgressBar(_progress);
 
             if (HasReachedToMilestone())
             {
                 Milestone();
+                await _gameScreen.UpdateProgressBar(_progress);
             }
         }
 
         private void Milestone()
         {
-            _gameScreen.UpdateProgressBar(_progress);
             _progress = 0;
         }
 
         public bool HasReachedToMilestone()
-            => _progress == _milestone;
+            => _progress == _configurationManager.GameConfigs.ProgressMilestone;
     }
 }
