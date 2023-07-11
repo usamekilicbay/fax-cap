@@ -17,12 +17,17 @@ namespace FaxCap.Installer
                 .Bind<GameManager>()
                 .FromComponentInHierarchy()
                 .AsSingle();
-            
+
+            Container
+                .Bind<ConfigurationManager>()
+                .FromComponentInHierarchy()
+                .AsSingle();
+
             Container
                 .Bind<DeckManager>()
                 .FromComponentInHierarchy()
-                .AsSingle();  
-            
+                .AsSingle();
+
             Container
                 .Bind<QuestionManager>()
                 .To<QuestionManager>()
@@ -32,17 +37,17 @@ namespace FaxCap.Installer
                 .Bind<ICurrencyManager>()
                 .To<CurrencyManager>()
                 .AsSingle();
-            
+
             Container
                 .Bind<ScoreManager>()
                 .To<ScoreManager>()
-                .AsSingle(); 
-            
+                .AsSingle();
+
             Container
                 .Bind<LevelManager>()
                 .To<LevelManager>()
-                .AsSingle(); 
-            
+                .AsSingle();
+
             Container
                 .Bind<ProgressManager>()
                 .To<ProgressManager>()
