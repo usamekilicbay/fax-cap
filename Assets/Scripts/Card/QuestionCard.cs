@@ -34,17 +34,20 @@ namespace FaxCap.Card
 
         private GameManager _gameManager;
         private ScoreManager _scoreManager;
+        private ProgressManager _progressManager;
         private QuestionManager _questionManager;
         private UIGameScreen _gameScreen;
 
         [Inject]
         public void Construct(GameManager gameManager,
             ScoreManager scoreManager,
+            ProgressManager progressManager,
             UIGameScreen gameScreen,
             QuestionManager questionManager)
         {
             _gameManager = gameManager;
             _scoreManager = scoreManager;
+            _progressManager = progressManager;
             _gameScreen = gameScreen;
             _questionManager = questionManager;
         }
@@ -120,6 +123,7 @@ namespace FaxCap.Card
 
             var isDoublePointCard = CardType == CardType.DoublePoint;
             _scoreManager.AddScore(replyTimer, isDoublePointCard);
+            _progressManager.Progress();
         }
 
         // TODO: Not sure if deck manager should fill this part
