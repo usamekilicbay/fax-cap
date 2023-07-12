@@ -2,23 +2,21 @@ using DG.Tweening;
 using FaxCap.Common.Types;
 using FaxCap.Manager;
 using FaxCap.UI.Screen;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using Zenject;
 
 namespace FaxCap.Card
 {
-    public abstract class CardBase : MonoBehaviour
+    public abstract class CardBase : MonoBehaviour, IDragHandler, IEndDragHandler
     {
-        [SerializeField] private GameObject frontSide;
-        [SerializeField] private GameObject backSide;
         [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] protected GameObject frontSide;
+        [SerializeField] protected GameObject backSide;
 
         protected RectTransform cardTransform;
 
-        private bool _isBackSideShown = true;
+        protected bool isFrontSideShown;
         private Vector3 _defaultScale;
 
         protected bool isTimerStart;
@@ -62,12 +60,12 @@ namespace FaxCap.Card
 
         protected virtual void Awake()
         {
-            Setup();
+            // ...
         }
 
         protected virtual void Start()
         {
-            FlipCard();
+            // ...
         }
 
         protected virtual void Update()
@@ -135,10 +133,8 @@ namespace FaxCap.Card
 
         #endregion
 
-        private void Setup()
+        protected virtual void Setup()
         {
-            frontSide.SetActive(false);
-            backSide.SetActive(true);
             //backSide.transform.rotation = Quaternion.Euler(Vector3.up * 180);
             //_defaultScale = transform.localScale;
             //transform.localScale = _defaultScale * 0.7f;
@@ -152,33 +148,54 @@ namespace FaxCap.Card
             initialRotation = cardTransform.rotation;
         }
 
-        private void FlipCard()
+        protected void FlipCard()
         {
+            var targetAngle = cardTransform.rotation.eulerAngles + Vector3.up * 90;
+            var duration = 0.5f;
+
             var sequence = DOTween.Sequence();
-            sequence.Append(cardTransform.DORotate(cardTransform.rotation.eulerAngles + Vector3.up * 90, 0.5f));
-            sequence.Join(canvasGroup.DOFade(0f, 0.5f));
+            sequence.Append(cardTransform.DORotate(targetAngle, duration));
+            sequence.Join(canvasGroup.DOFade(0f, duration));
             sequence.OnComplete(UpdateShownSide);
         }
 
         private void UpdateShownSide()
         {
-            if (_isBackSideShown)
-            {
-                frontSide.SetActive(true);
-                backSide.SetActive(false);
-                _isBackSideShown = false;
-            }
+            if (isFrontSideShown)
+                ShowBackSide();
             else
-            {
-                frontSide.SetActive(false);
-                backSide.SetActive(true);
-                _isBackSideShown = true;
-            }
+                ShowFrontSide();
 
+            var duration = 0.5f;
             var sequence = DOTween.Sequence();
-            sequence.Append(cardTransform.DORotate(Vector3.zero, 0.5f));
-            sequence.Join(canvasGroup.DOFade(1f, 0.5f));
+            sequence.Append(cardTransform.DORotate(Vector3.zero, duration));
+            sequence.Join(canvasGroup.DOFade(1f, duration));
             sequence.OnComplete(() => isTimerStart = true);
+        }
+
+        protected void ShowFrontSide()
+        {
+            frontSide.SetActive(true);
+            backSide.SetActive(false);
+            isFrontSideShown = true;
+        }
+
+        protected void ShowBackSide()
+        {
+            frontSide.SetActive(false);
+            backSide.SetActive(true);
+            isFrontSideShown = false;
+        }
+
+        protected virtual void SwipeLeft()
+        {
+            cardTransform.DOAnchorPosX(-1200f, 1f)
+                 .OnComplete(VanishCard);
+        }
+
+        protected virtual void SwipeUp()
+        {
+            // TODO: Complete run without fail
         }
 
         protected virtual void SwipeRight()
@@ -187,10 +204,9 @@ namespace FaxCap.Card
                 .OnComplete(VanishCard);
         }
 
-        protected virtual void SwipeLeft()
+        protected virtual void SwipeDown()
         {
-            cardTransform.DOAnchorPosX(-1200f, 1f)
-                 .OnComplete(VanishCard);
+            // TODO: Complete run without fail
         }
 
         private void ResetCard()
