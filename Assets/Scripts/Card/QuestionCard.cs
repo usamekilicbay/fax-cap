@@ -3,14 +3,13 @@ using FaxCap.Manager;
 using FaxCap.UI.Screen;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 using Random = UnityEngine.Random;
 
 namespace FaxCap.Card
 {
-    public class QuestionCard : CardBase, IDragHandler, IEndDragHandler
+    public class QuestionCard : CardBase
     {
         [Header("Front")]
         [SerializeField] private Image frontArtwork;
@@ -56,12 +55,12 @@ namespace FaxCap.Card
         {
             base.Awake();
 
-            _audioSource = GetComponent<AudioSource>();
+            Setup();
         }
 
         protected override void Start()
         {
-            base.Start();
+            FlipCard();
 
             replyTimer = _replyTimeLimit;
             timeBar.maxValue = _replyTimeLimit;
@@ -78,6 +77,15 @@ namespace FaxCap.Card
 
             if (replyTimer <= 0f)
                 GameOver();
+        }
+
+        protected override void Setup()
+        {
+            _audioSource = GetComponent<AudioSource>();
+
+            ShowBackSide();
+
+            base.Setup();
         }
 
         public void UpdateTimeBar(float timeSpan)
