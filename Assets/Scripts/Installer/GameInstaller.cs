@@ -54,6 +54,10 @@ namespace FaxCap.Installer
                 .AsSingle();
 
             Container
+                .Bind<NavigationFacade>()
+                .AsSingle();
+
+            Container
                 .Bind<CardFacade>()
                 .AsSingle();
 
