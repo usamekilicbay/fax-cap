@@ -11,7 +11,7 @@ namespace FaxCap.Card
 {
     public class QuestionCard : CardBase
     {
-        [Header("Front")]
+        [Header("Front Side")]
         [SerializeField] private Image frontArtwork;
         [SerializeField] private Image topBar;
         [SerializeField] private TextMeshProUGUI questionText;
@@ -19,13 +19,15 @@ namespace FaxCap.Card
         [SerializeField] private Slider timeBar;
         [SerializeField] private Image timeFill;
         [Space(10)]
-        [Header("Back")]
+        [Header("Back Side")]
         [SerializeField] private Image backArtwork;
         [SerializeField] private Image categoryIcon;
         [Space(10)]
         [Header("Effects")]
         [SerializeField] private AudioClip[] sfxs;
         [SerializeField] Sprite[] cardBackArtworks;
+
+        protected CardType cardType;
 
         private AudioSource _audioSource;
 
@@ -69,6 +71,8 @@ namespace FaxCap.Card
 
         protected override void Update()
         {
+            base.Update();
+            
             if (!isTimerStart)
                 return;
 
@@ -129,7 +133,7 @@ namespace FaxCap.Card
 
             _audioSource.PlayOneShot(sfxs[Random.Range(0, sfxs.Length)]);
 
-            var isDoublePointCard = CardType == CardType.DoublePoint;
+            var isDoublePointCard = cardType == CardType.DoublePoint;
             _scoreManager.AddScore(replyTimer, isDoublePointCard);
             _progressManager.Progress();
         }
@@ -149,7 +153,7 @@ namespace FaxCap.Card
 
         public class Factory : PlaceholderFactory<QuestionCard>
         {
-            ///
+            // ..
         }
     }
 }
