@@ -1,3 +1,4 @@
+using Assets.Scripts.Common.Types;
 using FaxCap.Installer;
 using FaxCap.UI.Screen;
 using UnityEngine;
@@ -37,6 +38,9 @@ namespace FaxCap.Card
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (movementAxis != MovementAxis.Initial)
+                return;
+
             _navigationFacade.GameManager.StartRun();
             UpdateUI(_navigationFacade.GameScreen);
         }
