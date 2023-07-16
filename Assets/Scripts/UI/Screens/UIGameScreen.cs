@@ -1,10 +1,13 @@
 using DG.Tweening;
 using FaxCap.Common.Abstract;
+using FaxCap.Common.Constant;
 using FaxCap.Manager;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace FaxCap.UI.Screen
 {
@@ -17,6 +20,7 @@ namespace FaxCap.UI.Screen
         [Header("Progress")]
         [SerializeField] private Slider progressBar;
         [SerializeField] private Image progressFill;
+        [SerializeField] private Image progressIcon;
         [Space(10)]
         [Header("Time")]
         [SerializeField] private Slider timeBar;
@@ -26,15 +30,30 @@ namespace FaxCap.UI.Screen
         public Color BackgroundCurrentColor { get; private set; }
 
         private Vector3 _scoreTextInitialSize;
+        private Vector3 _progressIconInitialSize;
         private Vector3 _comboCounterTextInitialSize;
         private Tween _scoreScaleTween;
+        private Tween _progressIconScaleTween;
         private Tween _comboCounterScaleTween;
+
+        #region DI
+
+        private ConfigurationManager _configurationManager;
+
+        [Inject]
+        public void Construct(ConfigurationManager configurationManager)
+        {
+            _configurationManager = configurationManager;
+        }
+
+        #endregion
 
         private void Awake()
         {
             Setup();
 
             _scoreTextInitialSize = scoreText.rectTransform.sizeDelta;
+            _progressIconInitialSize = progressIcon.rectTransform.sizeDelta;
             _comboCounterTextInitialSize = comboCounterText.rectTransform.sizeDelta;
 
             AnimationSetup();
@@ -43,7 +62,7 @@ namespace FaxCap.UI.Screen
         private void Setup()
         {
             BackgroundInitialColor = background.color;
-            progressBar.maxValue = 10;
+            progressBar.maxValue = _configurationManager.GameConfigs.ProgressMilestone;
             //timeBar.maxValue = 10;
         }
 
@@ -59,7 +78,16 @@ namespace FaxCap.UI.Screen
             _comboCounterScaleTween.SetAutoKill(false);
             _comboCounterScaleTween.Pause();
             _comboCounterScaleTween.SetDelay(0.3f);
+
+            // TODO: Continue
+            _progressIconScaleTween = progressIcon.rectTransform.DOSizeDelta(_progressIconInitialSize * 2f, 0.5f);
+            _progressIconScaleTween.OnStepComplete(() => progressIcon.rectTransform.DORotate(new Vector3(0f, 180f, 0f), 0.5f));
+            _progressIconScaleTween.SetLoops(2, LoopType.Yoyo);
+            _progressIconScaleTween.SetAutoKill(false);
+            _progressIconScaleTween.Pause();
         }
+
+        #region Remove
 
         int i;
         private void Update()
@@ -70,6 +98,8 @@ namespace FaxCap.UI.Screen
                 UpdateComboCounterText(i);
             }
         }
+
+        #endregion
 
         public void UpdateBackgroundColor(Color color)
         {
@@ -87,7 +117,7 @@ namespace FaxCap.UI.Screen
         {
             scoreText.SetText($"{score}");
 
-            PlayScoreScaleTween();
+            PlayScoreTextScaleTween();
         }
 
         public void UpdateComboCounterText(int comboCount)
@@ -111,20 +141,27 @@ namespace FaxCap.UI.Screen
             timeFill.color = Color.Lerp(Color.red, Color.green, normalizedTime);
         }
 
-        public void UpdateProgressBar(int progress)
+        public async Task UpdateProgressBar(float progress)
         {
-            progressBar.DOValue(progress, 0.5f);
+            var tween = progressBar.DOValue(progress, 1f);
+            await tween.AsyncWaitForCompletion();
+
+            if (progressBar.value == progressBar.maxValue)
+            {
+                await PlayProgressIconScaleTween();
+                progressIcon.rectTransform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
+            }
         }
 
         public override Task Show()
         {
+            Renew();
+
             return base.Show();
         }
 
         public override Task Hide()
         {
-            Renew();
-
             return base.Hide();
         }
 
@@ -132,13 +169,16 @@ namespace FaxCap.UI.Screen
         {
             background.color = BackgroundInitialColor;
             UpdateScoreText(0);
-            UpdateComboCounterText(1);
+            UpdateComboCounterText(0);
             UpdateProgressBar(0);
         }
 
-        private void PlayScoreScaleTween()
+        private void PlayScoreTextScaleTween()
         {
             var tween = _scoreScaleTween;
+
+            if (tween == null)
+                return;
 
             if (tween.IsPlaying())
                 tween.Pause();
@@ -147,9 +187,42 @@ namespace FaxCap.UI.Screen
             tween.Restart();
         }
 
+        private async Task PlayProgressIconScaleTween()
+        {
+            var tween = _progressIconScaleTween;
+
+            if (tween == null)
+                return;
+
+            if (tween.IsPlaying())
+                tween.Pause();
+
+            progressIcon.rectTransform.sizeDelta = _progressIconInitialSize;
+            tween.Restart();
+
+            await tween.AsyncWaitForCompletion();
+        }
+
+        private void PlayProgressIconTween()
+        {
+            var tween = _progressIconScaleTween;
+
+            if (tween == null)
+                return;
+
+            if (tween.IsPlaying())
+                tween.Pause();
+
+            comboCounterText.rectTransform.sizeDelta = _comboCounterTextInitialSize * 5;
+            tween.Restart();
+        }
+
         private void PlayComboCounterScaleTween()
         {
             var tween = _comboCounterScaleTween;
+
+            if (tween == null)
+                return;
 
             if (tween.IsPlaying())
                 tween.Pause();
