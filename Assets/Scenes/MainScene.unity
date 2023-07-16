@@ -4659,7 +4659,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 198b709466d665346805ee5f2ed289ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startRunButton: {fileID: 0}
   leftNavigationText: {fileID: 190512985}
   topNavigationText: {fileID: 1991129062}
   rightNavigationText: {fileID: 57900693}
@@ -7238,14 +7237,9 @@ MonoBehaviour:
   canvasGroup: {fileID: 9019595355076569932}
   frontSide: {fileID: 8269994034068340001}
   backSide: {fileID: 390655807531185811}
+  cardMovementConfigs: {fileID: 11400000, guid: 7bd951b3057c65e42a9f392ab4eb0ca7, type: 2}
   replyTimer: 5
   isDone: 0
-  CardType: 0
-  swipeThreshold: 100
-  rotationFactor: 0.2
-  movementSpeed: 5
-  maxRotationAngle: 30
-  movementRange: {x: -200, y: 200}
 --- !u!114 &9080303374637393554
 MonoBehaviour:
   m_ObjectHideFlags: 0

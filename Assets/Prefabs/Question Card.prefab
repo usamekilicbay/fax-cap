@@ -265,17 +265,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd3754923eb13bd4fb2fd2a1c2cd0f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 8622912573173385561}
   frontSide: {fileID: 8665590601562709812}
   backSide: {fileID: 1147665974543193222}
-  canvasGroup: {fileID: 8622912573173385561}
+  cardMovementConfigs: {fileID: 11400000, guid: 68b0b43e405c79241a949a4ccf740d56, type: 2}
   replyTimer: 0
   isDone: 0
-  CardType: 0
-  swipeThreshold: 100
-  rotationFactor: 0.2
-  movementSpeed: 5
-  maxRotationAngle: 15
-  movementRange: {x: -200, y: 200}
   frontArtwork: {fileID: 3400045899068971885}
   topBar: {fileID: 4056437639270892135}
   questionText: {fileID: 8396117852761818247}
