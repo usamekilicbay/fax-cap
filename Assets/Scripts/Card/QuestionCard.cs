@@ -115,6 +115,13 @@ namespace FaxCap.Card
             base.SwipeRight();
         }
 
+        protected override void SwipeDown()
+        {
+            _gameManager.CompleteRun();
+
+            base.SwipeDown();
+        }
+
         private void Answer(bool answer)
         {
             gameScreen.ResetBackgroundColor();
@@ -153,7 +160,7 @@ namespace FaxCap.Card
 
         public class Factory : PlaceholderFactory<QuestionCard>
         {
-            // ..
+            // ...
         }
     }
 }
