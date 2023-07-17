@@ -254,12 +254,12 @@ namespace FaxCap.Card
 
         protected virtual void SwipeUp()
         {
-            // TODO: Complete run without fail
+            // ...
         }
 
         protected virtual void SwipeDown()
         {
-            // TODO: Complete run without fail
+            // ...
         }
 
         private void ResetCard()

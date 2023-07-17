@@ -93,6 +93,5 @@ namespace FaxCap.Card
         {
             _navigationFacade.UIManager.ShowScreen(screen);
         }
-
     }
 }
