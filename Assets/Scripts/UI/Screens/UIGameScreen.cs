@@ -1,10 +1,8 @@
 using DG.Tweening;
 using FaxCap.Common.Abstract;
-using FaxCap.Common.Constant;
 using FaxCap.Manager;
 using System.Threading.Tasks;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -63,7 +61,6 @@ namespace FaxCap.UI.Screen
         {
             BackgroundInitialColor = background.color;
             progressBar.maxValue = _configurationManager.GameConfigs.ProgressMilestone;
-            //timeBar.maxValue = 10;
         }
 
         private void AnimationSetup()
@@ -73,15 +70,27 @@ namespace FaxCap.UI.Screen
             _scoreScaleTween.SetAutoKill(false);
             _scoreScaleTween.Pause();
 
-            _comboCounterScaleTween = comboCounterText.rectTransform.DOSizeDelta(_comboCounterTextInitialSize, 0.4f);
+            _comboCounterScaleTween = comboCounterText.rectTransform
+                .DOSizeDelta(_comboCounterTextInitialSize, 0.4f);
             _comboCounterScaleTween.SetEase(Ease.InBack);
             _comboCounterScaleTween.SetAutoKill(false);
             _comboCounterScaleTween.Pause();
             _comboCounterScaleTween.SetDelay(0.3f);
 
-            // TODO: Continue
-            _progressIconScaleTween = progressIcon.rectTransform.DOSizeDelta(_progressIconInitialSize * 2f, 0.5f);
-            _progressIconScaleTween.OnStepComplete(() => progressIcon.rectTransform.DORotate(new Vector3(0f, 180f, 0f), 0.5f));
+            var progressIconAnimDuration = 0.5f;
+
+            _progressIconScaleTween = progressIcon.rectTransform
+                .DOSizeDelta(_progressIconInitialSize * 2f, progressIconAnimDuration);
+            _progressIconScaleTween.OnStepComplete(async () =>
+            {
+                if (_progressIconScaleTween.CompletedLoops() == 1)
+                {
+                    var progressIconRotateTween = progressIcon.rectTransform.DORotate(new Vector3(0f, 180f, 0f), progressIconAnimDuration);
+
+                    await progressIconRotateTween.AsyncWaitForCompletion();
+                }
+            });
+
             _progressIconScaleTween.SetLoops(2, LoopType.Yoyo);
             _progressIconScaleTween.SetAutoKill(false);
             _progressIconScaleTween.Pause();
@@ -147,10 +156,10 @@ namespace FaxCap.UI.Screen
             await tween.AsyncWaitForCompletion();
 
             if (progressBar.value == progressBar.maxValue)
-            {
                 await PlayProgressIconScaleTween();
-                progressIcon.rectTransform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
-            }
+
+            if (progressBar.value == progressBar.minValue)
+                progressIcon.rectTransform.DORotate(Vector3.zero, 0.5f);
         }
 
         public override Task Show()
@@ -201,20 +210,6 @@ namespace FaxCap.UI.Screen
             tween.Restart();
 
             await tween.AsyncWaitForCompletion();
-        }
-
-        private void PlayProgressIconTween()
-        {
-            var tween = _progressIconScaleTween;
-
-            if (tween == null)
-                return;
-
-            if (tween.IsPlaying())
-                tween.Pause();
-
-            comboCounterText.rectTransform.sizeDelta = _comboCounterTextInitialSize * 5;
-            tween.Restart();
         }
 
         private void PlayComboCounterScaleTween()
