@@ -13,27 +13,27 @@ namespace FaxCap.Manager
 
         public GameConfigs GameConfigs => gameConfigs;
 
-        private const string FolderPath = "Assets/Configs"; // Specify the complete folder path containing the ScriptableObjects
+        private const string _folderPath = "Assets/Configs"; // Specify the complete folder path containing the ScriptableObjects
 
         [ContextMenu("Load Configs")]
         private void LoadConfigs()
         {
-            Type configurationManagerType = typeof(ConfigurationManager);
+            var configurationManagerType = typeof(ConfigurationManager);
 
             // Get all non-public instance fields with [SerializeField] attribute
-            FieldInfo[] fields = configurationManagerType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+            var fields = configurationManagerType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(field => field.GetCustomAttribute<SerializeField>() != null)
                 .ToArray();
 
-            foreach (FieldInfo field in fields)
+            foreach (var field in fields)
             {
                 Debug.LogError(field.Name);
 
-                string[] guids = AssetDatabase.FindAssets($"t:{field.FieldType.Name}", new string[] { FolderPath });
+                var guids = AssetDatabase.FindAssets($"t:{field.FieldType.Name}", new string[] { _folderPath });
 
-                foreach (string guid in guids)
+                foreach (var guid in guids)
                 {
-                    string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                    var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                     var config = AssetDatabase.LoadAssetAtPath(assetPath, field.FieldType);
 
                     field.SetValue(this, config);
