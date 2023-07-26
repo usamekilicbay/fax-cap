@@ -24,6 +24,16 @@ namespace FaxCap.Installer
                 .AsSingle();
 
             Container
+                .Bind<AudioManager>()
+                .FromComponentInHierarchy()
+                .AsSingle();
+
+            Container
+                .Bind<CameraManager>()
+                .FromComponentInHierarchy()
+                .AsSingle();
+
+            Container
                 .Bind<DeckManager>()
                 .FromComponentInHierarchy()
                 .AsSingle();
@@ -31,6 +41,16 @@ namespace FaxCap.Installer
             Container
                 .Bind<QuestionManager>()
                 .To<QuestionManager>()
+                .AsSingle();
+
+            Container
+                .Bind<PlayerStatsManager>()
+                .To<PlayerStatsManager>()
+                .AsSingle();
+
+            Container
+                .Bind<SaveManager>()
+                .To<SaveManager>()
                 .AsSingle();
 
             Container
