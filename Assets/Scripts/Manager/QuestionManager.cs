@@ -2,12 +2,13 @@ using FaxCap.Common.Abstract;
 using FaxCap.Entity;
 using FaxCap.UI.Screen;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
 namespace FaxCap.Manager
 {
-    public class QuestionManager : IRenewable
+    public class QuestionManager : IRenewable, ICompletable
     {
         private List<Question> _questions = new();
         private Question _question;
@@ -16,11 +17,14 @@ namespace FaxCap.Manager
         public const float ReplyTimerLimit = 5f;
 
         private UIGameScreen _uiGameScreen;
+        private UIResultScreen _resultScreen;
 
         [Inject]
-        public void Construct(UIGameScreen uiGameScreen)
+        public void Construct(UIGameScreen uiGameScreen,
+            UIResultScreen resultScreen)
         {
             _uiGameScreen = uiGameScreen;
+            _resultScreen = resultScreen;
 
             GenerateQuestions();
         }
@@ -79,6 +83,11 @@ namespace FaxCap.Manager
         public void Renew()
         {
             questionCount = 0;
+        }
+
+        public async Task Complete(bool isSuccessful = true)
+        {
+            await _resultScreen.UpdateQuestionText(questionCount);
         }
     }
 }
