@@ -1,8 +1,10 @@
+using Assets.Scripts.Common.Extensions;
 using FaxCap.Common.Abstract;
 using FaxCap.Common.Constant;
 using FaxCap.UI.Screen;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -17,27 +19,26 @@ namespace FaxCap.Manager
 
         private int _score;
         private int _comboCounter = 0;
+        private int _bestCombo = 0;
         private const float _perfectScoreTimeSpan = 0f;
 
         private UIGameScreen _gameScreen;
         private UIResultScreen _resultScreen;
+        private ProgressManager _progressManager;
 
         [Inject]
         public void Construct(UIGameScreen gameScreen,
-            UIResultScreen resultScreen)
+            UIResultScreen resultScreen,
+            ProgressManager progressManager)
         {
             _gameScreen = gameScreen;
             _resultScreen = resultScreen;
+            _progressManager = progressManager;
 
             Setup();
         }
 
-        private void Setup()
-        {
-            _scoreStorage.Add(Key.Score.Question, new List<int>());
-        }
-
-        public void AddScore(float replyTimeSpan, bool isDoubleScore)
+        public void AddScore(float replyTimeSpan, bool isDoubleScore = false)
         {
             var tempScore = _reqularQuestionScore;
 
@@ -45,7 +46,11 @@ namespace FaxCap.Manager
             {
                 tempScore = _perfectScore;
                 _comboCounter++;
-                Debug.Log(_comboCounter);
+                
+                if (_comboCounter > _bestCombo)
+                    _bestCombo = _comboCounter;
+
+                Debug.Log($"X{_comboCounter}");
                 _gameScreen.UpdateComboCounterText(_comboCounter);
             }
             else
@@ -53,6 +58,10 @@ namespace FaxCap.Manager
 
             tempScore *= isDoubleScore
                 ? 2
+                : 1;
+
+            tempScore *= _comboCounter > 1
+                ? (int)(_comboCounter + _comboCounter * 0.3f)
                 : 1;
 
             _scoreStorage[Key.Score.Question].Add(tempScore);
@@ -67,9 +76,15 @@ namespace FaxCap.Manager
             keys.ForEach(x => _scoreStorage[Key.Score.Question].Clear());
         }
 
-        public async void UpdateScore()
+        public async Task UpdateScoreAsync(bool isSucessful = true)
         {
             var scoreKeys = _scoreStorage.Keys;
+
+            if (!isSucessful)
+            {
+                var wastedCount = _progressManager.RemainingToMilestone();
+                scoreKeys.ToList().RemoveLast(wastedCount);
+            }
 
             foreach (var key in scoreKeys)
             {
@@ -80,17 +95,26 @@ namespace FaxCap.Manager
             }
         }
 
-        private bool IsPerfectReplyTime(float replyTimeSpan)
-            => replyTimeSpan >= _perfectScoreTimeSpan;
-
         public void Renew()
         {
+            _comboCounter = 0;
             ResetScore();
         }
 
-        public void Complete()
+        public async Task Complete(bool isSuccessful = true)
         {
-            UpdateScore();
+            await _resultScreen.UpdateComboText(15);
+            await UpdateScoreAsync(true);
+
+            //UpdateScore(isSuccessful);
         }
+
+        private void Setup()
+        {
+            _scoreStorage.Add(Key.Score.Question, new List<int>());
+        }
+
+        private bool IsPerfectReplyTime(float replyTimeSpan)
+           => replyTimeSpan >= _perfectScoreTimeSpan;
     }
 }
