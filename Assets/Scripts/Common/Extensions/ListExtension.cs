@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public static class ListExtensions
+    public static class ListExtension
     {
         /// <summary>
         /// Removes a specified number of elements from the end of the list.
