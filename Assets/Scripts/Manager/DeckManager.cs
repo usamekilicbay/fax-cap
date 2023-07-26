@@ -1,11 +1,13 @@
 using FaxCap.Card;
+using FaxCap.Common.Abstract;
 using FaxCap.UI.Screen;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
 namespace FaxCap.Manager
 {
-    public class DeckManager : MonoBehaviour
+    public class DeckManager : MonoBehaviour, IRenewable, ICompletable
     {
         [SerializeField] private RectTransform cardSpawnPoint;
 
@@ -37,11 +39,6 @@ namespace FaxCap.Manager
 
         #endregion
 
-        public void StartRun()
-        {
-            SpawnCard();
-        }
-
         public void SpawnCard()
         {
             _questionManager.AssignNewQuestion();
@@ -52,10 +49,17 @@ namespace FaxCap.Manager
             _currentCard = card;
         }
 
-        public void CompleteRun()
+        public void Renew()
         {
-            if (!_currentCard.IsUsed)
+            if (_currentCard != null)
                 Destroy(_currentCard.gameObject);
+
+            SpawnCard();
+        }
+
+        public async Task Complete(bool isSuccessful = true)
+        {
+            Destroy(_currentCard?.gameObject);
         }
     }
 }
