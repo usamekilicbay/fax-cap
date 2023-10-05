@@ -1,8 +1,10 @@
 using Assets.Scripts.Common.Types;
 using DG.Tweening;
+using FaxCap.Common.Constant;
 using FaxCap.Configs;
 using FaxCap.Manager;
 using FaxCap.UI.Screen;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -58,8 +60,8 @@ namespace FaxCap.Card
         protected virtual void Awake()
         {
 #if UNITY_EDITOR
-            if (!_isThresholdDebugRingCreated)
-                CreateCircle();
+            //if (!_isThresholdDebugRingCreated)
+            //    CreateCircle();
 #endif
         }
 
@@ -71,7 +73,7 @@ namespace FaxCap.Card
         protected virtual void Update()
         {
 #if UNITY_EDITOR
-            UpdateDebugRingColor();
+            //UpdateDebugRingColor();
 #endif
         }
 
@@ -151,8 +153,7 @@ namespace FaxCap.Card
             gameScreen.UpdateBackgroundColor(targetColor);
         }
 
-
-        public void OnEndDrag(PointerEventData eventData)
+        public async void OnEndDrag(PointerEventData eventData)
         {
             _isInThresholdCircle = true;
 
@@ -176,16 +177,16 @@ namespace FaxCap.Card
             if (movementAxis == MovementAxis.Horizontal)
             {
                 if (posX > 0f)
-                    SwipeRight();
+                    await SwipeRight();
                 else if (posX < 0f)
-                    SwipeLeft();
+                    await SwipeLeft();
             }
             else
             {
                 if (posY > 0f)
-                    SwipeUp();
+                    await SwipeUp();
                 else if (posY < 0f)
-                    SwipeDown();
+                    await SwipeDown();
             }
 
             // Reset the direction locking
@@ -240,27 +241,45 @@ namespace FaxCap.Card
             isFrontSideShown = false;
         }
 
-        protected virtual void SwipeLeft()
+        #region Swipe
+
+        protected virtual async Task SwipeLeft()
         {
-            cardTransform.DOAnchorPosX(-1200f, 1f)
-                 .OnComplete(VanishCard);
+            var movementTween = cardTransform.DOAnchorPosX(-1200f, 1f);
+            movementTween.SetId(TweenId.CardSwipeTween);
+            movementTween.OnKill(VanishCard);
+
+            await movementTween.AsyncWaitForCompletion();
         }
 
-        protected virtual void SwipeRight()
+        protected virtual async Task SwipeRight()
         {
-            cardTransform.DOAnchorPosX(1200f, 1f)
-                .OnComplete(VanishCard);
+            var movementTween = cardTransform.DOAnchorPosX(1200f, 1f);
+            movementTween.SetId(TweenId.CardSwipeTween);
+            movementTween.OnKill(VanishCard);
+
+            await movementTween.AsyncWaitForCompletion();
         }
 
-        protected virtual void SwipeUp()
+        protected virtual async Task SwipeUp()
         {
-            // ...
+            var movementTween = cardTransform.DOAnchorPosY(1200f, 1f);
+            movementTween.SetId(TweenId.CardSwipeTween);
+            movementTween.OnKill(VanishCard);
+
+            await movementTween.AsyncWaitForCompletion();
         }
 
-        protected virtual void SwipeDown()
+        protected virtual async Task SwipeDown()
         {
-            // ...
+            var movementTween = cardTransform.DOAnchorPosY(-1200f, 1f);
+            movementTween.SetId(TweenId.CardSwipeTween);
+            movementTween.OnKill(VanishCard);
+
+            await movementTween.AsyncWaitForCompletion();
         }
+
+        #endregion
 
         private void ResetCard()
         {
@@ -283,9 +302,14 @@ namespace FaxCap.Card
             });
         }
 
-        private void VanishCard()
+        public void VanishCard()
         {
             Destroy(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(TweenId.CardSwipeTween);
         }
 
         public abstract void UpdateCard();

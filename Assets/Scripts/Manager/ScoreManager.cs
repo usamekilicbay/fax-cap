@@ -20,20 +20,22 @@ namespace FaxCap.Manager
         private int _score;
         private int _comboCounter = 0;
         private int _bestCombo = 0;
-        private const float _perfectScoreTimeSpan = 0f;
 
         private UIGameScreen _gameScreen;
         private UIResultScreen _resultScreen;
         private ProgressManager _progressManager;
+        private ConfigurationManager _configurationManager;
 
         [Inject]
         public void Construct(UIGameScreen gameScreen,
             UIResultScreen resultScreen,
-            ProgressManager progressManager)
+            ProgressManager progressManager,
+            ConfigurationManager configurationManager)
         {
             _gameScreen = gameScreen;
             _resultScreen = resultScreen;
             _progressManager = progressManager;
+            _configurationManager = configurationManager;
 
             Setup();
         }
@@ -41,7 +43,6 @@ namespace FaxCap.Manager
         public void AddScore(float replyTimeSpan, bool isDoubleScore = false)
         {
             var tempScore = _reqularQuestionScore;
-
             if (IsPerfectReplyTime(replyTimeSpan))
             {
                 tempScore = _perfectScore;
@@ -54,7 +55,10 @@ namespace FaxCap.Manager
                 _gameScreen.UpdateComboCounterText(_comboCounter);
             }
             else
+            {
                 _comboCounter = 1;
+                _gameScreen.UpdateComboCounterText(_comboCounter);
+            }
 
             tempScore *= isDoubleScore
                 ? 2
@@ -115,6 +119,6 @@ namespace FaxCap.Manager
         }
 
         private bool IsPerfectReplyTime(float replyTimeSpan)
-           => replyTimeSpan >= _perfectScoreTimeSpan;
+           => replyTimeSpan >= _configurationManager.GameConfigs.DefaultComboTriggerPeriod;
     }
 }

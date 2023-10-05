@@ -1,6 +1,7 @@
 using FaxCap.Common.Types;
 using FaxCap.Manager;
 using FaxCap.UI.Screen;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,26 +32,27 @@ namespace FaxCap.Card
 
         private AudioSource _audioSource;
 
-        private const float _replyTimeLimit = 500f;
-
         private GameManager _gameManager;
         private ScoreManager _scoreManager;
         private ProgressManager _progressManager;
         private QuestionManager _questionManager;
         private UIGameScreen _gameScreen;
+        private ConfigurationManager _configurationManager;
 
         [Inject]
         public void Construct(GameManager gameManager,
             ScoreManager scoreManager,
             ProgressManager progressManager,
             UIGameScreen gameScreen,
-            QuestionManager questionManager)
+            QuestionManager questionManager,
+            ConfigurationManager configurationManager)
         {
             _gameManager = gameManager;
             _scoreManager = scoreManager;
             _progressManager = progressManager;
             _gameScreen = gameScreen;
             _questionManager = questionManager;
+            _configurationManager = configurationManager;
         }
 
         protected override void Awake()
@@ -64,15 +66,15 @@ namespace FaxCap.Card
         {
             FlipCard();
 
-            replyTimer = _replyTimeLimit;
-            timeBar.maxValue = _replyTimeLimit;
-            timeBar.value = _replyTimeLimit;
+            replyTimer = _configurationManager.GameConfigs.DefaultAnswerPeriod;
+            timeBar.maxValue = _configurationManager.GameConfigs.DefaultAnswerPeriod;
+            timeBar.value = _configurationManager.GameConfigs.DefaultAnswerPeriod;
         }
 
         protected override void Update()
         {
             base.Update();
-            
+
             if (!isTimerStart)
                 return;
 
@@ -99,27 +101,28 @@ namespace FaxCap.Card
             //timeFill.color = Color.Lerp(Color.red, Color.green, normalizedTime);
         }
 
-        protected override void SwipeLeft()
+        protected override async Task SwipeLeft()
         {
             Debug.Log("Swipe left");
             Answer(false);
 
-            base.SwipeLeft();
+            await base.SwipeLeft();
         }
 
-        protected override void SwipeRight()
+        protected override async Task SwipeRight()
         {
             Debug.Log("Swipe right");
             Answer(true);
 
-            base.SwipeRight();
+            await base.SwipeRight();
         }
 
-        protected override void SwipeDown()
+        protected override async Task SwipeDown()
         {
-            _gameManager.CompleteRun();
+            Debug.Log("Swipe down");
+            GameOver(true);
 
-            base.SwipeDown();
+            await base.SwipeDown();
         }
 
         private void Answer(bool answer)
@@ -152,10 +155,10 @@ namespace FaxCap.Card
             backArtwork.sprite = cardBackArtworks[Random.Range(0, cardBackArtworks.Length)];
         }
 
-        private void GameOver()
+        private void GameOver(bool isSuccesful = false)
         {
             isTimerStart = false;
-            _gameManager.CompleteRun();
+            _gameManager.CompleteRun(isSuccesful);
         }
 
         public class Factory : PlaceholderFactory<QuestionCard>

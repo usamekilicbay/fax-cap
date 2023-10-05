@@ -1,5 +1,6 @@
 using FaxCap.Common.Abstract;
 using FaxCap.UI.Screen;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -7,9 +8,12 @@ namespace FaxCap.Manager
 {
     public class LevelManager : ICompletable
     {
-        public int Level { get; private set; } = 1;
+        public int TempExp { get; private set; } = 0;
+        public int TempRequiredExp { get; private set; } = 0;
+        public int TempLevel { get; private set; } = 1;
         public int Exp { get; private set; } = 0;
-        public int RequiredExp { get; private set; } = 100;
+        public int RequiredExp { get; private set; } = 0;
+        public int Level { get; private set; } = 0;
 
         private UIResultScreen _resultScreen;
 
@@ -31,27 +35,31 @@ namespace FaxCap.Manager
         // Add experience points
         public void AddExp(int expPoints)
         {
-            Exp += expPoints;
+            TempExp += expPoints;
 
             // Check if player level up
-            while (Exp >= RequiredExp)
+            while (TempExp >= TempRequiredExp)
                 LevelUp();
         }
 
         // Level up
         public void LevelUp()
         {
-            Level++;
-            Exp -= RequiredExp;
-            RequiredExp = GetRequiredExp(Level);
+            TempLevel++;
+
+            TempExp -= TempRequiredExp;
+            TempRequiredExp = GetRequiredExp(TempLevel);
 
             Debug.Log("Level Up! You reached level " + Level);
         }
 
-        public void Complete()
+        public async Task Complete(bool isSuccessful = true)
         {
-            _resultScreen.UpdateLevelBar(Exp);
-            _resultScreen.UpdateLevelTexts(Level);
+            Exp = TempExp;
+            RequiredExp = TempRequiredExp;
+            Level = TempLevel;
+
+            await _resultScreen.UpdateLevel(Exp, Level);
         }
     }
 }

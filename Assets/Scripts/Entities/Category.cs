@@ -1,6 +1,6 @@
 namespace FaxCap.Entity
 {
-    public struct Category
+    public class Category
     {
         public string Name { get; }
 

@@ -1,6 +1,6 @@
 namespace FaxCap.Entity
 {
-    public struct Question
+    public class Question
     {
         public string QuestionText { get; }
         public bool Answer { get; }

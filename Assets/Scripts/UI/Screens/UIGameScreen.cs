@@ -96,6 +96,7 @@ namespace FaxCap.UI.Screen
         {
             if (comboCount < 2)
             {
+                comboCounterText.SetText($"X{comboCount}");
                 comboCounterText.gameObject.SetActive(false);
                 return;
             }

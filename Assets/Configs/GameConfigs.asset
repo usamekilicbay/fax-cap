@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef54ce8db4e65f54ab9deeeda236f194, type: 3}
   m_Name: GameConfigs
   m_EditorClassIdentifier: 
-  progressMilestone: 1
+  defaultAnswerPeriod: 5
+  defaultComboTriggerPeriod: 4
+  progressMilestone: 2
